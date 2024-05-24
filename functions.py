@@ -3,7 +3,6 @@ from pyomo.opt import SolverFactory
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from functions import *
 
 def read_file(input='input.xlsx'):
     data = pd.read_excel(input, None)
@@ -139,8 +138,10 @@ def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',status=False):
     
     # solving routine
     opt = pyo.SolverFactory(solver)
-    opt.options['timelimit'] = time_limit
-    opt.options['mipgap'] = mipgap
+    if time_limit:
+        opt.options['timelimit'] = time_limit
+    if mipgap:
+        opt.options['mipgap'] = mipgap
     opt.solve(model,tee=status)
     print('The objective function values is:', model.obj())
 
