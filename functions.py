@@ -8,7 +8,7 @@ def read_file(input='input.xlsx'):
     data = pd.read_excel(input, None)
     return data
 
-def setData(data, d_off=4, d_on=1, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max = 1, E_end = 0.2):
+def setData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max = 1, E_end = 0.2):
     T_start = data['Dataset']['Trip (Begin)'].tolist()
     T_start = [x for x in T_start if str(x) != 'nan']
     T_start = [int(x) for x in T_start]
@@ -79,6 +79,7 @@ def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',status=False):
     for n in model.N:
         for t in model.T:
             model.constraints.add(sum(model.x[k,n,t] for k in model.K) <= 1)
+
     #constraint 3
     for i in model.I: 
         for t in range(model.T_start[i],model.T_end[i]):
@@ -170,11 +171,41 @@ def power(T,w):
     W = pd.DataFrame(transac_list, index=T, columns=['Power'])
     return W
 
+def charger(N,T,K,x):
+    value = []
+    for n in N:
+        for t in T:
+            value.append(pyo.value(sum(x[k,n,t] for k in K)))
+    # Convert the list to a numpy array
+    array_charger = np.array(value)
+    # Reshape the array to 96 rows and 10 columns
+    reshaped_array = array_charger.reshape(10, 96)
+    final_charger = reshaped_array.T
+    # Column names for the chargers
+    charger_columns = [f'Charger {i}' for i in range(1, 97)]
+    # Convert the transposed array to a DataFrame
+    df_charger = pd.DataFrame(final_charger, index=T,columns=charger_columns[:final_charger.shape[1]])
+    
+    
+    # Extract values from the model
+    value = []
+    for k in K:
+        for n in N:
+            for t in T:
+                value.append((k, n, t, pyo.value(x[k, n, t])))
+    # Convert the list to a DataFrame
+    df = pd.DataFrame(value, columns=['Bus', 'Charger', 'Time', 'Charging_Status'])
+    # Filter to include only charging events (Charging_Status == 1)
+    df_charging = df[df['Charging_Status'] == 1]
+    return df_charger,df_charging
+
 def save(model):
     #Calculate energy
     Energy,Energy_perc = energy_bus(model.K, model.T, model.e, model.C_bat)
     #Calculate power buy
     Power = power(model.T, model.w_buy) * 4
+    #Calculate the charger engaged
+    Chargers_enabled, Chargers_assigned = charger(model.N, model.T, model.K, model.x)
     #Calculate objective function value
     Obj = pd.DataFrame({'Objective Value': [model.obj()]})
     #Save data to Excel with the name of t_start
@@ -182,6 +213,8 @@ def save(model):
         Energy.to_excel(writer, sheet_name='Energy')
         Energy_perc.to_excel(writer, sheet_name='SOC')
         Power.to_excel(writer, sheet_name='Power')
+        Chargers_enabled.to_excel(writer, sheet_name='Charger Enabled')
+        Chargers_assigned.to_excel(writer, sheet_name='Charger Assigned')
         Obj.to_excel(writer, sheet_name='Optimal value')
     print('The outputs are saved')
 
