@@ -10,17 +10,35 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     bslib::page_fillable(
-      shiny::div(
-        class="centered-container",
-        shiny::fileInput(
-          inputId = "file",
-          label = "Data for optimization (.xlsx file)",
-          multiple = FALSE,
-          accept = ".xlsx",
-          width = "400px"
+      # shiny::div(
+      #   class="centered-container",
+      #   shiny::fileInput(
+      #     inputId = "file",
+      #     label = "Data for optimization (.xlsx file)",
+      #     multiple = FALSE,
+      #     accept = ".xlsx",
+      #     width = "400px"
+      #   )
+      # ),
+      # shiny::tableOutput("table")
+      bslib::layout_column_wrap(
+        bslib::value_box(
+          title = "Optimal Value",
+          value = shiny::textOutput("optimal_value")
+        ),
+        bslib::value_box(
+          title = "Power",
+          value = shiny::textOutput("power_value")
         )
       ),
-      shiny::tableOutput("table")
+      bslib::card(
+        bslib::card_header("Energy"),
+        bslib::card_body(shiny::plotOutput("plot1"))
+      ),
+      bslib::card(
+        bslib::card_header("SOC"),
+        bslib::card_body(shiny::plotOutput("plot2"))
+      )
     )
   )
 }
