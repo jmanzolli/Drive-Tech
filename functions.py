@@ -3,6 +3,7 @@ from pyomo.opt import SolverFactory
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from datetime import timedelta
 
 def read_file(input='input.xlsx'):
     data = pd.read_excel(input, None)
@@ -171,33 +172,44 @@ def power(T,w):
     W = pd.DataFrame(transac_list, index=T, columns=['Power'])
     return W
 
-def charger(N,T,K,x):
+import numpy as np
+import pandas as pd
+import pyomo.environ as pyo
+
+def charger(N, T, K, x):
+    # Initial value extraction from model
     value = []
     for n in N:
         for t in T:
-            value.append(pyo.value(sum(x[k,n,t] for k in K)))
+            value.append(pyo.value(sum(x[k, n, t] for k in K)))
+
     # Convert the list to a numpy array
     array_charger = np.array(value)
-    # Reshape the array to 96 rows and 10 columns
-    reshaped_array = array_charger.reshape(10, 96)
-    final_charger = reshaped_array.T
-    # Column names for the chargers
-    charger_columns = [f'Charger {i}' for i in range(1, 97)]
-    # Convert the transposed array to a DataFrame
-    df_charger = pd.DataFrame(final_charger, index=T,columns=charger_columns[:final_charger.shape[1]])
-    
+
+    # Reshape the array to 10 chargers and 96 timesteps
+    reshaped_array = array_charger.reshape(len(N), len(T))
+
+    # Create DataFrame with the original 15-minute intervals
+    charger_columns = [f'Charger {i+1}' for i in range(len(N))]
+    df_charger = pd.DataFrame(reshaped_array.T, index=T, columns=charger_columns)
     
     # Extract values from the model
     value = []
     for k in K:
         for n in N:
             for t in T:
-                value.append((k, n, t, pyo.value(x[k, n, t])))
+                # Convert time step to hour:minutes format
+                time_str = str(timedelta(minutes=t * 15))
+                time_str = time_str[:-3]  # remove seconds part
+                value.append((k, n, time_str, pyo.value(x[k, n, t])))
+
     # Convert the list to a DataFrame
     df = pd.DataFrame(value, columns=['Bus', 'Charger', 'Time', 'Charging_Status'])
+    
     # Filter to include only charging events (Charging_Status == 1)
     df_charging = df[df['Charging_Status'] == 1]
-    return df_charger,df_charging
+    
+    return df_charger, df_charging
 
 def save(model):
     #Calculate energy
