@@ -4,19 +4,9 @@
 \alias{run_app}
 \title{Run the Shiny Application}
 \usage{
-run_app(
-  onStart = NULL,
-  options = list(),
-  enableBookmarking = NULL,
-  uiPattern = "/",
-  ...
-)
+run_app(options = list(), enableBookmarking = NULL, uiPattern = "/", ...)
 }
 \arguments{
-\item{onStart}{A function that will be called before the app is actually run.
-This is only needed for \code{shinyAppObj}, since in the \code{shinyAppDir}
-case, a \code{global.R} file can be used for this purpose.}
-
 \item{options}{Named options that should be passed to the \code{runApp} call
 (these can be any of the following: "port", "launch.browser", "host", "quiet",
 "display.mode" and "test.mode"). You can also specify \code{width} and

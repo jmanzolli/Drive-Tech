@@ -5,57 +5,31 @@
 #' @import shiny ggplot2
 #' @noRd
 app_server <- function(input, output, session) {
-  # Your application server logic
+  session$userData$w <- waiter::Waiter$new(
+    html = waiter::spin_loaders(id = 1, color = "darkblue", style = "height: 4em; width: 4em;"),
+    color = waiter::transparent(.5) 
+  )
 
-  # data <- shiny::eventReactive(input$file, {
-  #   file <- input$file
+  aux <- shiny::reactiveValues(
+    navbar_selected = NULL,
+    input_data = NULL,
+    output_data = NULL,
+    map_tmp = sf::st_read("inst/map_gis/trocos.shx") |>  sf::st_transform(crs = 4326),
+  )
 
-  #   shiny::req(file)
-
-  #   ext <- tools::file_ext(file$datapath)
-
-  #   shiny::validate(shiny::need(ext == "xlsx", "Please upload a xlsx file"))
-
-  #   readxl::read_xlsx(file$datapath)
-  # })
-
-  # output$table <- shiny::renderTable({
-  #   shiny::req(data())
-
-  #   data()
-  # })
-
-  output$plot1 <- shiny::renderPlot({
-    energy <- readxl::read_xlsx("output.xlsx", sheet = 1)[, -1]
-
-    tibble::tibble(
-      index = 1:ncol(energy),
-      value = as.numeric(tail(energy, 1))
-    ) |>
-      ggplot(aes(x = index, y = value)) +
-      geom_point() +
-      geom_line()
+  shiny::observe({
+    aux$navbar_selected <- input$tab
   })
 
-  output$plot2 <- shiny::renderPlot({
-    soc <- readxl::read_xlsx("output.xlsx", sheet = 2)[, -1]
+  mod_loading_server("loading", aux)
+  mod_describe_server("describe", aux)
+  mod_optimize_server("optimize", aux, session)
 
-   tibble::tibble(
-      index = 1:ncol(soc),
-      value = as.numeric(tail(soc, 1))
-    ) |>
-      ggplot(aes(x = index, y = value)) +
-      geom_point() +
-      geom_line()
+  shiny::observe({
+    shiny::req(aux$input_data)
+
+    shinyjs::show("describe_div")
   })
 
-  output$optimal_value <- shiny::renderText({
-    ov <- readxl::read_xlsx("output.xlsx", sheet = 4)[, -1]
-    ov[[1]]
-  })
-
-  output$power_value <- shiny::renderText({
-    power <- readxl::read_xlsx("output.xlsx", sheet = 3)[, -1]
-    tail(power, 1)[[1]]
-  })
+ 
 }

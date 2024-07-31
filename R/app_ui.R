@@ -5,39 +5,31 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
-  tagList(
+  shiny::tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    bslib::page_fillable(
-      # shiny::div(
-      #   class="centered-container",
-      #   shiny::fileInput(
-      #     inputId = "file",
-      #     label = "Data for optimization (.xlsx file)",
-      #     multiple = FALSE,
-      #     accept = ".xlsx",
-      #     width = "400px"
-      #   )
-      # ),
-      # shiny::tableOutput("table")
-      bslib::layout_column_wrap(
-        bslib::value_box(
-          title = "Optimal Value",
-          value = shiny::textOutput("optimal_value")
-        ),
-        bslib::value_box(
-          title = "Power",
-          value = shiny::textOutput("power_value")
+    bslib::page_navbar(
+      title = "Drive TECH",
+      id = "tab",
+      fillable = FALSE,
+      theme = bslib::bs_theme(bootswatch = "vapor") |> 
+      bslib::bs_add_variables(
+        "bs-btn-bg" = "#44d9e8"
+      ),
+      bslib::nav_panel(
+        title = "Input",
+        mod_loading_ui("loading"),
+        shinyjs::hidden(
+          shiny::div(
+            id = "describe_div",
+            mod_describe_ui("describe")
+         )
         )
       ),
-      bslib::card(
-        bslib::card_header("Energy"),
-        bslib::card_body(shiny::plotOutput("plot1"))
-      ),
-      bslib::card(
-        bslib::card_header("SOC"),
-        bslib::card_body(shiny::plotOutput("plot2"))
+      bslib::nav_panel(
+        title = "Optimization",
+        mod_optimize_ui("optimize")
       )
     )
   )
@@ -62,7 +54,9 @@ golem_add_external_resources <- function() {
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "driveTech"
-    )
+    ),
+    waiter::useWaiter(),
+    shinyjs::useShinyjs()
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
   )

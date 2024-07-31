@@ -55,3 +55,18 @@ tibble::tibble(
 ggplot(aes(x = index, y = value)) +
 geom_point() +
 geom_line()
+
+
+
+#!
+#!   EXPLORE MAP_GIS
+#!
+library(sf)
+
+paragens <- st_read("inst/map_gis/paragens.shx") |> 
+    st_transform(crs = 4326) 
+
+trocos <- st_read("inst/map_gis/trocos.shx") |> 
+    st_transform(crs = 4326) 
+
+

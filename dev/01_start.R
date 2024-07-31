@@ -59,7 +59,7 @@ golem::install_dev_deps()
 # # golem::remove_favicon() # Uncomment to remove the default favicon
 
 # ## Add helper functions ----
-# golem::use_utils_ui(with_test = TRUE)
+# golem::use_utils_ui()
 # golem::use_utils_server(with_test = TRUE)
 
 # You're now set! ----
