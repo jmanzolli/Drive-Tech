@@ -6,11 +6,32 @@ Authors@R:
 Description: App for optimization
 License: What license is it under?
 Imports: 
+    bsicons,
     bslib,
     config (>= 0.3.2),
+    dplyr,
+    echarts4r,
+    formattable,
     ggplot2,
     golem (>= 0.4.1),
-    shiny (>= 1.8.1.1)
+    leaflet,
+    lubridate,
+    openxlsx,
+    purrr,
+    readxl,
+    reticulate,
+    scales,
+    sf,
+    shiny (>= 1.8.1.1),
+    shinyalert,
+    shinycssloaders,
+    shinyjs,
+    shinyWidgets,
+    stringr,
+    tibble,
+    tidyr,
+    tools,
+    waiter
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.2
