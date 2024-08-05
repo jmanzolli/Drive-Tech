@@ -5,12 +5,15 @@ Authors@R: person('Cesar', 'Quintero', email = 'cesard1117@gmail.com', role = c(
 Description: App for optimization
 License: What license is it under?
 Imports: 
+    bsicons,
     bslib,
     config (>= 0.3.2),
+    dplyr,
+    echarts4r,
+    formattable,
     ggplot2,
     golem (>= 0.4.1),
-    pkgload,
     shiny (>= 1.8.1.1)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.2
