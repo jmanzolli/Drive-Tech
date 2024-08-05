@@ -355,8 +355,8 @@ mod_optimize_server <- function(id, aux, global_session) {
         ggplot2::theme_dark() +
         ggplot2::scale_x_continuous(limits = c(1, 24), breaks = seq(1, 24, by = 1)) +
         ggplot2::scale_y_continuous(limits = c(1, 20), breaks = seq(1, 20, by = 1)) +
-        ggplot2::labs(x = "TIME [HOURS]", y = "BUS ASSIGNED") +
-        ggplot2::ggtitle("BUS ASSIGNATION OVER TIME") +
+        ggplot2::labs(x = "Time [Hours]", y = "Bus ID") +
+        ggplot2::ggtitle("Charger assigned per Bus") +
         ggplot2::theme(
           plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
         )
@@ -441,22 +441,22 @@ mod_optimize_server <- function(id, aux, global_session) {
         width = 1,
         bslib::value_box(
           theme = "primary",
-          title = "Bus's Total Energy Consumption",
+          title = "Total Energy Consumption",
           value = paste0(round(sum(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
-          title = "Bus's Max. Energy",
+          title = "Maximum Energy",
           value = paste0(round(max(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
-          title = "Bus's Min. Energy",
+          title = "Mininum Energy",
           value = paste0(round(min(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
-          title = "Bus's Average SOC",
+          title = "Average SOC",
           value = scales::percent(mean(aux$output_data$SOC[, input$bus_selected][[1]] / 100, na.rm = TRUE))
         )
       )
@@ -478,12 +478,12 @@ mod_optimize_server <- function(id, aux, global_session) {
         bslib::value_box(
           theme = "primary",
           title = "Total Charging Time",
-          value = paste0(round(total, 2), " kWh")
+          value = paste0(round(total, 2), "h")
         ),
         bslib::value_box(
           theme = "primary",
           title = "Average Charging Time",
-          value = paste0(round(average, 2), " kWh/bus")
+          value = paste0(round(average, 2), "h")
         )
       )
     }))

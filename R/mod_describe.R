@@ -139,9 +139,9 @@ mod_describe_server <- function(id, aux) {
         dplyr::select(`Bus ID`, `Buses`, `Length...4`, `Bus Brand`) |> 
           tidyr::drop_na() |> 
           dplyr::rename(
-            "ID" = "Bus ID", 
-            "Charge" = "Buses",
-            "Length" = "Length...4",
+            "Vehicle Number" = "Bus ID", 
+            "Battery Capacity [kWh]" = "Buses",
+            "Vehicle size [m]" = "Length...4",
             "Brand" = "Bus Brand"
           )
           # reactable::reactable(
@@ -240,12 +240,12 @@ mod_describe_server <- function(id, aux) {
       shiny::req(aux$input_data)
 
       aux$input_data[[1]] |> 
-        dplyr::select(`Charger ID`, `Charger`, `Status`, `Brand`) |> 
+        dplyr::select(`Charger ID`, `Charger power`, `Status`, `Brand`) |> 
           tidyr::drop_na() |> 
           dplyr::rename(
-            "ID" = "Charger ID",
-            "Charger" = "Charger",
-            "Status" = "Status",
+            "Charger Number" = "Charger ID",
+            "Power [kW]" = "Charger power",
+            "Type" = "Status",
             "Brand" = "Brand"
           )
           # reactable::reactable(
@@ -322,7 +322,7 @@ mod_describe_server <- function(id, aux) {
           nameLocation = "middle", 
           nameTextStyle = list(fontSize = 16), 
           nameGap = 30,
-          min = 0, max = 600, interval = 50
+          min = 0, max = 500, interval = 50
         ) |> 
         echarts4r::e_y_axis(name = "CAD$/kW", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
         echarts4r::e_tooltip() |> 
