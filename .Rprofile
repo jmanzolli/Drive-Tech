@@ -1,4 +1,10 @@
-reticulate::use_virtualenv("venv", required = TRUE)
+
+if (reticulate::virtualenv_exists("drive_tech")) {
+	reticulate::use_virtualenv("drive_tech")
+} else {
+	reticulate::virtualenv_create("drive_tech")
+	purrr::map(readLines("requirements.txt"), reticulate::py_install)
+}
 
 # R_VERSION=4.2
 # R_HOME=/Library/Frameworks/R.framework/Versions/4.2/R radian
