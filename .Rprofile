@@ -16,6 +16,7 @@ options(
 	digits = 15
 	# shiny.launch.browser = .rs.invokeShinyWindowExternal
 )
+
 options(
 	languageserver.formatting_style = function(options) {
 		style <- styler::tidyverse_style(

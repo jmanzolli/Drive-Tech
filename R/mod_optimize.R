@@ -52,7 +52,7 @@ mod_optimize_ui <- function(id) {
                     shiny::br(),
                     echarts4r::echarts4rOutput(ns("results_plot2"))
                   ),
-                  shiny::plotOutput(ns("results_plot3"))
+                  echarts4r::echarts4rOutput(ns("results_plot3"))
                 )
               )
             )
@@ -342,7 +342,7 @@ mod_optimize_server <- function(id, aux, global_session) {
           )
         )
     })
-    output$results_plot3 <- shiny::renderPlot({
+    output$results_plot3 <- echarts4r::renderEcharts4r({
       shiny::req(aux$output_data)
 
       aux$output_data$CHARGERS_ASSIGNED |>
@@ -350,16 +350,26 @@ mod_optimize_server <- function(id, aux, global_session) {
         dplyr::group_by(Bus, Charger) |>
         dplyr::summarise(time_start = min(Time), time_end = max(Time)) |>
         dplyr::mutate(Charger = factor(Charger, sort(unique(Charger)))) |>
-        ggplot2::ggplot(ggplot2::aes(group = Charger, fill = Charger)) +
-        ggplot2::geom_rect(ggplot2::aes(ymin = Bus - 0.1, ymax = Bus + 0.1, xmin = time_start, xmax = time_end)) +
-        ggplot2::theme_dark() +
-        ggplot2::scale_x_continuous(limits = c(1, 24), breaks = seq(1, 24, by = 1)) +
-        ggplot2::scale_y_continuous(limits = c(1, 20), breaks = seq(1, 20, by = 1)) +
-        ggplot2::labs(x = "Time [Hours]", y = "Bus ID") +
-        ggplot2::ggtitle("Charger assigned per Bus") +
-        ggplot2::theme(
-          plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
+        tidyr::gather(time, value, -Bus, -Charger) |> 
+        dplyr::ungroup() |> 
+        dplyr::group_by(Charger, Bus) |> 
+        dplyr::arrange(dplyr::desc(Charger)) |> 
+        echarts4r::e_chart(Bus) |> 
+        echarts4r::e_line(value, lineStyle = list(width = 20)) |> 
+        echarts4r::e_theme("dark-bold") |>
+        echarts4r::e_flip_coords() |> 
+        echarts4r::e_y_axis(name = "Bus ID", min = 0, max = 20, interval = 1) |>
+        echarts4r::e_x_axis(name = "Time [Hours]", min = 0, max = 24, interval = 1) |> 
+        echarts4r::e_title("Charger assigned per Bus", left = "center") |>
+        echarts4r::e_legend(
+          orient = "horizontal",
+          bottom = 0,
+          textStyle = list(
+            fontSize = 12,
+            fontWeight = "bold"
+          )
         )
+
     })
 
     output$results_output <- shiny::renderUI({

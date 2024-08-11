@@ -63,9 +63,9 @@ mod_describe_ui <- function(id) {
                   shiny::h1(shiny::strong("ROUTE AND SCHEDULING"))
                 ),
                 bslib::card_body(
-                  leaflet::leafletOutput(ns("route_map")) |> 
+                  leaflet::leafletOutput(ns("route_map"), height = 675) |> 
                     shinycssloaders::withSpinner(),
-                  shiny::tableOutput(ns("route_table"))
+                  # shiny::tableOutput(ns("route_table"))
                 )
               )
             )
@@ -188,7 +188,10 @@ mod_describe_server <- function(id, aux) {
       shiny::req(aux$input_data)
       
       aux$map_tmp |> 
-        leaflet::leaflet() |>
+        leaflet::leaflet(
+          options = leaflet::leafletOptions()
+        ) |>
+        leaflet:::setView(lng = -8.4196, lat = 40.2056, 13) |> 
         leaflet::addProviderTiles(leaflet::providers$OpenStreetMap) |> 
         leaflet::addPolylines(layerId = ~idtroco, color = "darkgrey")
     })
@@ -204,20 +207,20 @@ mod_describe_server <- function(id, aux) {
         )
     })
 
-    output$route_table <- shiny::renderTable({
-      shiny::req(aux$input_data)
+    # output$route_table <- shiny::renderTable({
+    #   shiny::req(aux$input_data)
 
-      data_filter <- aux$map_tmp[aux$map_tmp$idtroco == input$route_map_shape_click$id, ]
+    #   data_filter <- aux$map_tmp[aux$map_tmp$idtroco == input$route_map_shape_click$id, ]
 
-      shiny::validate(
-        shiny::need(nrow(data_filter) > 0, "No street selected")
-      )
+    #   shiny::validate(
+    #     shiny::need(nrow(data_filter) > 0, "No street selected")
+    #   )
 
-      data_filter |> 
-        dplyr::select(origem, destino, tipoveic, tipoalimt) |> 
-        sf::st_drop_geometry()
-        # reactable::reactable()
-    }, align = "c")
+    #   data_filter |> 
+    #     dplyr::select(origem, destino, tipoveic, tipoalimt) |> 
+    #     sf::st_drop_geometry()
+    #     # reactable::reactable()
+    # }, align = "c")
 
     shiny::observeEvent(input$charging_infrastructure_bttn, {
       golem::invoke_js(
