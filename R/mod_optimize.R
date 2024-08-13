@@ -186,23 +186,21 @@ mod_optimize_server <- function(id, aux, global_session) {
             # result <- run_gurobi(aux$input_data, log_file)
             # if (isFALSE(result)) {
             #   result <- list(
-            #     Energy = NULL,
+            #     ENERGY = NULL,
             #     SOC = NULL,
             #     POWER = NULL,
             #     CHARGERS_ENABLED = NULL,
             #     CHARGERS_ASSIGNED = NULL,
-            #     OPTIMAL = NULL
+            #     OPTIMAL = NULL,
+            #     ANALYTICS = NULL
             #   )
-            # } else {
-            #   result <- purrr::map(result, tibble::as_tibble)
-            #   names(result) <- c("ENERGY", "SOC", "POWER", "CHARGERS_ENABLED", "CHARGERS_ASSIGNED", "OPTIMAL")
-            # }
+            # } 
             # if (file.exists(log_file)) {
             #   result$log <- paste0(readLines(log_file), collapse = "\n")
             # } else {
             #   result$log <- NULL
             # }
-
+            # saveRDS(result, "result.rds")
             result <- readRDS("result.rds")
 
             if (!is.null(result$CHARGERS_ASSIGNED)) {
@@ -427,8 +425,8 @@ mod_optimize_server <- function(id, aux, global_session) {
     output$analytics_energy_output_totals <- shiny::renderUI({
       shiny::req(aux$output_data, input$bus_selected)
 
-      total <- round(sum(aux$output_data$ENERGY), 2)
-      average <- round(mean(unlist(aux$output_data$ENERGY)), 2)
+      total <- round(aux$output_data$ANALYTICS$Summary[, 1], 2)
+      average <- round(aux$output_data$ANALYTICS$Summary[, 3], 2)
 
       bslib::layout_column_wrap(
         width = 1,
@@ -447,41 +445,59 @@ mod_optimize_server <- function(id, aux, global_session) {
     output$analytics_energy_output <- shiny::renderUI({
       shiny::req(aux$output_data, input$bus_selected)
 
+      total_energy <- aux$output_data$ANALYTICS[["Energy Consumption Per Bus"]] |> 
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
+
+      maximum_soc <- aux$output_data$ANALYTICS[["Max SOC Per Bus"]] |> 
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
+
+      minimum_soc <- aux$output_data$ANALYTICS[["Min SOC Per Bus"]] |> 
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
+        
+      avg_soc <- aux$output_data$ANALYTICS[["Avg SOC Per Bus"]] |> 
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
+
       bslib::layout_column_wrap(
         width = 1,
         bslib::value_box(
           theme = "primary",
           title = "Total Energy Consumption",
-          value = paste0(round(sum(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
+          value = paste0(round(total_energy, 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
-          title = "Maximum Energy",
-          value = paste0(round(max(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
+          title = "Maximum SOC",
+          value = paste0(round(maximum_soc, 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
           title = "Mininum Energy",
-          value = paste0(round(min(aux$output_data$ENERGY[, input$bus_selected]), 2), " kWh")
+          value = paste0(round(minimum_soc, 2), " kWh")
         ),
         bslib::value_box(
           theme = "primary",
           title = "Average SOC",
-          value = scales::percent(mean(aux$output_data$SOC[, input$bus_selected][[1]] / 100, na.rm = TRUE))
+          value = scales::percent(avg_soc / 100)
         )
       )
     })
     output$analytics_charging_output_totals <- shiny::renderUI(({
       shiny::req(aux$output_data, input$bus_selected)
-      total <- aux$output_data$CHARGERS_ASSIGNED |>
-        dplyr::count(Bus) |>
-        dplyr::pull(n) |>
-        sum()
-
-      average <- aux$output_data$CHARGERS_ASSIGNED |>
-        dplyr::count(Bus) |>
-        dplyr::pull(n) |>
-        mean()
+      
+      total <- aux$output_data$ANALYTICS$Summary[, 2]
+      average <- aux$output_data$ANALYTICS$Summary[, 4]
 
       bslib::layout_column_wrap(
         width = 1,
@@ -500,51 +516,51 @@ mod_optimize_server <- function(id, aux, global_session) {
     output$analytics_charging_output <- shiny::renderUI({
       shiny::req(aux$output_data, input$bus_selected)
 
-      charger_info <- aux$output_data$CHARGERS_ASSIGNED |>
-        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |>
-        dplyr::summarise(
-          charging_time = dplyr::n(),
-          charging_window = paste0(decimal_to_hm(min(Time)), " to ", decimal_to_hm(max(Time))),
-          charging_number = paste0("Charger ", unique(Charger), collapse = ",")
-        )
+      charging_window <- aux$output_data$ANALYTICS[["Charging Window Per Bus"]] |>
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+")))
+      charging_window <- paste0(charging_window$min, " to ", charging_window$max)
+
+      charging_number <- aux$output_data$ANALYTICS[["Charger Number Per Bus"]] |>
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
+
+      charging_time <- aux$output_data$ANALYTICS[["Charging Time Per Bus"]] |> 
+        tibble::as_tibble() |> 
+        tibble::rownames_to_column(var = "Bus") |> 
+        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
+        dplyr::pull(2)
 
       bslib::layout_column_wrap(
         width = 1,
         bslib::value_box(
           theme = "primary",
           title = "Charging time",
-          value = paste0(charger_info$charging_time, "h")
+          value = paste0(charging_time, "h")
         ),
         bslib::value_box(
           theme = "primary",
           title = "Charging window",
-          value = charger_info$charging_window
+          value = charging_window
         ),
         bslib::value_box(
           theme = "primary",
           title = "Charger number",
-          value = charger_info$charging_number
+          value = charging_number
         )
       )
     })
     output$fleet_state_output_totals <- echarts4r::renderEcharts4r({
       shiny::req(aux$output_data)
 
-      tb <- apply(aux$output_data$ENERGY, 2, function(x) {
-        x <- x - dplyr::lag(x)
-        x[1] <- 0
-        dplyr::case_when(
-          x == 0 ~ "IDLE",
-          x > 0 ~ "Charging",
-          x < 0 ~ "Running"
-        )
-      }) |>
-        tibble::as_tibble()
-
-      tb |>
-        tidyr::gather(variable, value) |>
-        dplyr::count(value) |>
-        dplyr::mutate(pct = n / sum(n)) |>
+      tibble::tribble(
+        ~ value,  ~ pct,
+        "Charging", aux$output_data$ANALYTICS$Summary[, 7] / 100,
+        "IDLE", aux$output_data$ANALYTICS$Summary[, 5] / 100,
+        "Running", aux$output_data$ANALYTICS$Summary[, 6] / 100
+      ) |> 
         echarts4r::e_chart(value) |>
         echarts4r::e_pie(pct) |>
         echarts4r::e_theme("dark-bold") |>
@@ -557,21 +573,16 @@ mod_optimize_server <- function(id, aux, global_session) {
     output$fleet_state_output_plot <- echarts4r::renderEcharts4r({
       shiny::req(aux$output_data, input$bus_selected)
 
-      x <- aux$output_data$ENERGY[, input$bus_selected]
-      x <- x[[1]]
-      x <- x - dplyr::lag(x)
-      x[1] <- 0
-      x <- dplyr::case_when(
-        x == 0 ~ "IDLE",
-        x > 0 ~ "Charging",
-        x < 0 ~ "Running"
-      )
+      x <- aux$output_data$ANALYTICS[["State Percentage Per Bus (%)"]] |> 
+        tibble::rownames_to_column() |> 
+        tidyr::gather(variable, value, -rowname) |> 
+        dplyr::filter(variable == !!input$bus_selected)
+      
+      x$value <- x$value / 100
 
-      tibble::tibble(x = x) |>
-        dplyr::count(x) |>
-        dplyr::mutate(pct = n / sum(n)) |>
-        echarts4r::e_chart(x) |>
-        echarts4r::e_pie(pct) |>
+      x |> 
+        echarts4r::e_chart(rowname) |>
+        echarts4r::e_pie(value) |>
         echarts4r::e_theme("dark-bold") |>
         echarts4r::e_labels(
           show = TRUE,

@@ -254,4 +254,17 @@ def result(model):
     #Calculate objective function value
     Obj = pd.DataFrame({'Objective Value': [model.obj()]})
     
-    return [Energy, Energy_perc, Power, Chargers_enabled, Chargers_assigned, Obj]
+    return {
+        "ENERGY": Energy,
+        "SOC": Energy_perc,
+        "POWER": Power,
+        "CHARGERS_ENABLED": Chargers_enabled,
+        "CHARGERS_ASSIGNED": Chargers_assigned,
+        "OPTIMAL": Obj
+    }
+
+
+
+
+
+
