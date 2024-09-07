@@ -243,11 +243,11 @@ mod_describe_server <- function(id, aux) {
       shiny::req(aux$input_data)
 
       aux$input_data[[1]] |> 
-        dplyr::select(`Charger ID`, `Charger power`, `Status`, `Brand`) |> 
+        dplyr::select(`Charger ID`, Charger, `Status`, `Brand`) |> 
           tidyr::drop_na() |> 
           dplyr::rename(
             "Charger Number" = "Charger ID",
-            "Power [kW]" = "Charger power",
+            "Power [kW]" = "Charger",
             "Type" = "Status",
             "Brand" = "Brand"
           )
