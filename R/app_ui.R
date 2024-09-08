@@ -6,30 +6,44 @@
 #' @noRd
 app_ui <- function(request) {
   shiny::tagList(
-    # Leave this function for adding external resources
+    
     golem_add_external_resources(),
-    # Your application UI logic
+
     bslib::page_navbar(
-      title = "Drive TECH",
+      title = "",
       id = "tab",
       fillable = FALSE,
-      theme = bslib::bs_theme(bootswatch = "vapor") |> 
-      bslib::bs_add_variables(
-        "bs-btn-bg" = "#44d9e8"
-      ),
-      bslib::nav_panel(
-        title = "Input",
-        mod_loading_ui("loading"),
-        shinyjs::hidden(
-          shiny::div(
-            id = "describe_div",
-            mod_describe_ui("describe")
-         )
+      bslib::nav_menu(
+        title = "GEOH",
+        bslib::nav_panel(
+          title = "Metrics"
+        ),
+        bslib::nav_panel(
+          title = "Predictions (FCR)"
+        ),
+        bslib::nav_panel(
+          title = "Predictions (CO2)"
         )
       ),
       bslib::nav_panel(
-        title = "Optimization",
-        mod_optimize_ui("optimize")
+        title = "DRIVE TECH",
+        bslib::navset_underline(
+          id = "tab_drive_tech",
+          bslib::nav_panel(
+            title = "Summary",
+            mod_drive_loading_ui("loading"),
+            shinyjs::hidden(
+              shiny::div(
+                id = "describe_div",
+                mod_drive_summary_ui("describe")
+              )
+            )
+          ),
+          bslib::nav_panel(
+            title = "Optimization",
+            mod_drive_optimize_ui("optimize")
+          )
+        )
       )
     )
   )

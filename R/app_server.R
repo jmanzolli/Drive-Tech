@@ -11,25 +11,24 @@ app_server <- function(input, output, session) {
   )
 
   aux <- shiny::reactiveValues(
-    navbar_selected = NULL,
-    input_data = NULL,
-    output_data = NULL,
+    tab_drive_tech_selected = NULL,
+    drive_tech_data = NULL,
+    drive_tech_data_op = NULL,
     map_tmp = sf::st_read("inst/map_gis/trocos.shx") |>  sf::st_transform(crs = 4326),
   )
 
   shiny::observe({
-    aux$navbar_selected <- input$tab
+    aux$tab_drive_tech_selected <- input$tab_drive_tech
   })
 
-  mod_loading_server("loading", aux)
-  mod_describe_server("describe", aux)
-  mod_optimize_server("optimize", aux, session)
+  mod_drive_loading_server("loading", aux)
+  mod_drive_summary_server("describe", aux)
+  mod_drive_optimize_server("optimize", aux, session)
 
   shiny::observe({
-    shiny::req(aux$input_data)
+    shiny::req(aux$drive_tech_data)
 
     shinyjs::show("describe_div")
   })
-
  
 }

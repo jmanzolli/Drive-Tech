@@ -6,8 +6,8 @@
 #'
 #' @noRd
 #'
-#' @importFrom ggplot2
-mod_optimize_ui <- function(id) {
+#' @import ggplot2
+mod_drive_optimize_ui <- function(id) {
   ns <- shiny::NS(id)
   bslib::page_fluid(
     id = ns("optimization_layout"),
@@ -159,18 +159,18 @@ mod_optimize_ui <- function(id) {
 #' optimize Server Functions
 #'
 #' @noRd
-mod_optimize_server <- function(id, aux, global_session) {
+mod_drive_optimize_server <- function(id, aux, global_session) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     shiny::observe({
-      shiny::req(aux$navbar_selected)
+      shiny::req(aux$tab_drive_tech_selected)
 
       shiny::isolate({
-        if (aux$navbar_selected == "Optimization" & is.null(aux$input_data)) {
+        if (aux$tab_drive_tech_selected == "Optimization" & is.null(aux$drive_tech_data)) {
           bslib::nav_select(
-            id = "tab",
-            selected = "Input",
+            id = "tab_drive_tech",
+            selected = "Summary",
             session = global_session
           )
           shinyalert::shinyalert(
@@ -178,12 +178,12 @@ mod_optimize_server <- function(id, aux, global_session) {
             text = "Upload the data first and then optimize",
             type = "error"
           )
-        } else if (aux$navbar_selected == "Optimization") {
+        } else if (aux$tab_drive_tech_selected == "Optimization") {
           if (aux$run_gurobi == 1) {
             session$userData$w$show()
 
             # log_file <<- tempfile(fileext = ".log")
-            # result <- run_gurobi(aux$input_data, log_file)
+            # result <- run_gurobi(aux$drive_tech_data, log_file)
             # if (isFALSE(result)) {
             #   result <- list(
             #     ENERGY = NULL,
@@ -210,7 +210,7 @@ mod_optimize_server <- function(id, aux, global_session) {
                   Time = lubridate::hour(Time) + (lubridate::minute(Time) / 60)
                 )
 
-              aux$output_data <- result
+              aux$drive_tech_data_op <- result
 
               aux$run_gurobi <- 0
             }
@@ -218,7 +218,7 @@ mod_optimize_server <- function(id, aux, global_session) {
             shiny::showModal(
               shiny::modalDialog(
                 title = "Gurobi optimization",
-                shiny::pre(style = "height: 75vh;", aux$output_data$log),
+                shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
                 easyClose = TRUE,
                 footer = NULL,
                 size = "xl"
@@ -234,7 +234,7 @@ mod_optimize_server <- function(id, aux, global_session) {
             shiny::showModal(
               shiny::modalDialog(
                 title = "Gurobi optimization",
-                shiny::pre(style = "height: 75vh;", aux$output_data$log),
+                shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
                 easyClose = TRUE,
                 footer = NULL,
                 size = "xl"
@@ -246,18 +246,18 @@ mod_optimize_server <- function(id, aux, global_session) {
     })
 
     shiny::observe({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "bus_selected",
-        choices = colnames(aux$output_data$ENERGY)
+        choices = colnames(aux$drive_tech_data_op$ENERGY)
       )
 
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "output_sheet",
-        choices = names(aux$output_data)[-length(aux$output_data)]
+        choices = names(aux$drive_tech_data_op)[-length(aux$drive_tech_data_op)]
       )
     })
 
@@ -277,18 +277,18 @@ mod_optimize_server <- function(id, aux, global_session) {
       shinyjs::hide("export_layout")
     })
     output$results_plot1 <- echarts4r::renderEcharts4r({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
       # start_time <- as.POSIXct("2024-06-23 00:00:00")
       # end_time <- as.POSIXct("2024-06-23 23:45:00")
       # time_sequence <- seq(from = start_time, to = end_time, by = "15 min")
 
-      aux$output_data$SOC |>
+      aux$drive_tech_data_op$SOC |>
         dplyr::mutate(
           time = seq(0.25, 24, by = .25),
         ) |>
         tidyr::gather(variable, value, -time) |>
-        dplyr::mutate(variable = factor(variable, paste0("bus ", 1:ncol(aux$output_data$SOC)))) |>
+        dplyr::mutate(variable = factor(variable, paste0("bus ", 1:ncol(aux$drive_tech_data_op$SOC)))) |>
         dplyr::group_by(variable) |>
         echarts4r::e_chart(time) |>
         echarts4r::e_line(value) |>
@@ -308,18 +308,18 @@ mod_optimize_server <- function(id, aux, global_session) {
       # echarts4r::e_theme_custom()
     })
     output$results_plot2 <- echarts4r::renderEcharts4r({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
       # start_time <- as.POSIXct("2024-06-23 00:00:00")
       # end_time <- as.POSIXct("2024-06-23 23:45:00")
       # time_sequence <- seq(from = start_time, to = end_time, by = "15 min")
 
-      aux$output_data$POWER |>
+      aux$drive_tech_data_op$POWER |>
         dplyr::mutate(
           time = seq(0.25, 24, by = .25),
         ) |>
         tibble::tibble(
-          Energy = aux$input_data$Dataset[["Energy price"]]
+          Energy = aux$drive_tech_data$Dataset[["Energy price"]]
         ) |>
         # tidyr::gather(variable, value, -time) |>
         # dplyr::group_by(variable) |>
@@ -341,9 +341,9 @@ mod_optimize_server <- function(id, aux, global_session) {
         )
     })
     output$results_plot3 <- echarts4r::renderEcharts4r({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
-      aux$output_data$CHARGERS_ASSIGNED |>
+      aux$drive_tech_data_op$CHARGERS_ASSIGNED |>
         tidyr::drop_na() |>
         dplyr::group_by(Bus, Charger) |>
         dplyr::summarise(time_start = min(Time), time_end = max(Time)) |>
@@ -371,14 +371,14 @@ mod_optimize_server <- function(id, aux, global_session) {
     })
 
     output$results_output <- shiny::renderUI({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
       bslib::layout_column_wrap(
         width = 4,
         height = "115px",
         bslib::value_box(
           title = "Optimal value",
-          value = euro(aux$output_data$OPTIMAL[[1]]),
+          value = euro(aux$drive_tech_data_op$OPTIMAL[[1]]),
           showcase = bsicons::bs_icon("currency-euro"),
           theme = "primary",
           shiny::p("Charging costs")
@@ -423,10 +423,10 @@ mod_optimize_server <- function(id, aux, global_session) {
       shinyjs::hide("export_layout")
     })
     output$analytics_energy_output_totals <- shiny::renderUI({
-      shiny::req(aux$output_data, input$bus_selected)
+      shiny::req(aux$drive_tech_data_op, input$bus_selected)
 
-      total <- round(aux$output_data$ANALYTICS$Summary[, 1], 2)
-      average <- round(aux$output_data$ANALYTICS$Summary[, 3], 2)
+      total <- round(aux$drive_tech_data_op$ANALYTICS$Summary[, 1], 2)
+      average <- round(aux$drive_tech_data_op$ANALYTICS$Summary[, 3], 2)
 
       bslib::layout_column_wrap(
         width = 1,
@@ -443,27 +443,27 @@ mod_optimize_server <- function(id, aux, global_session) {
       )
     })
     output$analytics_energy_output <- shiny::renderUI({
-      shiny::req(aux$output_data, input$bus_selected)
+      shiny::req(aux$drive_tech_data_op, input$bus_selected)
 
-      total_energy <- aux$output_data$ANALYTICS[["Energy Consumption Per Bus"]] |> 
+      total_energy <- aux$drive_tech_data_op$ANALYTICS[["Energy Consumption Per Bus"]] |> 
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
 
-      maximum_soc <- aux$output_data$ANALYTICS[["Max SOC Per Bus"]] |> 
+      maximum_soc <- aux$drive_tech_data_op$ANALYTICS[["Max SOC Per Bus"]] |> 
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
 
-      minimum_soc <- aux$output_data$ANALYTICS[["Min SOC Per Bus"]] |> 
+      minimum_soc <- aux$drive_tech_data_op$ANALYTICS[["Min SOC Per Bus"]] |> 
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
         
-      avg_soc <- aux$output_data$ANALYTICS[["Avg SOC Per Bus"]] |> 
+      avg_soc <- aux$drive_tech_data_op$ANALYTICS[["Avg SOC Per Bus"]] |> 
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
@@ -494,10 +494,10 @@ mod_optimize_server <- function(id, aux, global_session) {
       )
     })
     output$analytics_charging_output_totals <- shiny::renderUI(({
-      shiny::req(aux$output_data, input$bus_selected)
+      shiny::req(aux$drive_tech_data_op, input$bus_selected)
       
-      total <- aux$output_data$ANALYTICS$Summary[, 2]
-      average <- aux$output_data$ANALYTICS$Summary[, 4]
+      total <- aux$drive_tech_data_op$ANALYTICS$Summary[, 2]
+      average <- aux$drive_tech_data_op$ANALYTICS$Summary[, 4]
 
       bslib::layout_column_wrap(
         width = 1,
@@ -514,20 +514,20 @@ mod_optimize_server <- function(id, aux, global_session) {
       )
     }))
     output$analytics_charging_output <- shiny::renderUI({
-      shiny::req(aux$output_data, input$bus_selected)
+      shiny::req(aux$drive_tech_data_op, input$bus_selected)
 
-      charging_window <- aux$output_data$ANALYTICS[["Charging Window Per Bus"]] |>
+      charging_window <- aux$drive_tech_data_op$ANALYTICS[["Charging Window Per Bus"]] |>
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+")))
       charging_window <- paste0(charging_window$min, " to ", charging_window$max)
 
-      charging_number <- aux$output_data$ANALYTICS[["Charger Number Per Bus"]] |>
+      charging_number <- aux$drive_tech_data_op$ANALYTICS[["Charger Number Per Bus"]] |>
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
 
-      charging_time <- aux$output_data$ANALYTICS[["Charging Time Per Bus"]] |> 
+      charging_time <- aux$drive_tech_data_op$ANALYTICS[["Charging Time Per Bus"]] |> 
         tibble::as_tibble() |> 
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
@@ -553,13 +553,13 @@ mod_optimize_server <- function(id, aux, global_session) {
       )
     })
     output$fleet_state_output_totals <- echarts4r::renderEcharts4r({
-      shiny::req(aux$output_data)
+      shiny::req(aux$drive_tech_data_op)
 
       tibble::tribble(
         ~ value,  ~ pct,
-        "Charging", aux$output_data$ANALYTICS$Summary[, 7] / 100,
-        "IDLE", aux$output_data$ANALYTICS$Summary[, 5] / 100,
-        "Running", aux$output_data$ANALYTICS$Summary[, 6] / 100
+        "Charging", aux$drive_tech_data_op$ANALYTICS$Summary[, 7] / 100,
+        "IDLE", aux$drive_tech_data_op$ANALYTICS$Summary[, 5] / 100,
+        "Running", aux$drive_tech_data_op$ANALYTICS$Summary[, 6] / 100
       ) |> 
         echarts4r::e_chart(value) |>
         echarts4r::e_pie(pct) |>
@@ -571,9 +571,9 @@ mod_optimize_server <- function(id, aux, global_session) {
         )
     })
     output$fleet_state_output_plot <- echarts4r::renderEcharts4r({
-      shiny::req(aux$output_data, input$bus_selected)
+      shiny::req(aux$drive_tech_data_op, input$bus_selected)
 
-      x <- aux$output_data$ANALYTICS[["State Percentage Per Bus (%)"]] |> 
+      x <- aux$drive_tech_data_op$ANALYTICS[["State Percentage Per Bus (%)"]] |> 
         tibble::rownames_to_column() |> 
         tidyr::gather(variable, value, -rowname) |> 
         dplyr::filter(variable == !!input$bus_selected)
@@ -608,9 +608,9 @@ mod_optimize_server <- function(id, aux, global_session) {
     })
     output$export_table <- shiny::renderTable(
       {
-        shiny::req(aux$output_data, input$output_sheet)
+        shiny::req(aux$drive_tech_data_op, input$output_sheet)
 
-        aux$output_data[[input$output_sheet]]
+        aux$drive_tech_data_op[[input$output_sheet]]
       },
       width = "100%",
       hover = TRUE,
@@ -632,12 +632,12 @@ mod_optimize_server <- function(id, aux, global_session) {
         openxlsx::addWorksheet(OUT, "CHARGERS_ASSIGNED")
         openxlsx::addWorksheet(OUT, "OPTIMAL")
 
-        openxlsx::writeData(OUT, "ENERGY", aux$output_data[["ENERGY"]])
-        openxlsx::writeData(OUT, "SOC", aux$output_data[["SOC"]])
-        openxlsx::writeData(OUT, "POWER", aux$output_data[["POWER"]])
-        openxlsx::writeData(OUT, "CHARGERS_ENABLED", aux$output_data[["CHARGERS_ENABLED"]])
-        openxlsx::writeData(OUT, "CHARGERS_ASSIGNED", aux$output_data[["CHARGERS_ASSIGNED"]])
-        openxlsx::writeData(OUT, "OPTIMAL", aux$output_data[["OPTIMAL"]])
+        openxlsx::writeData(OUT, "ENERGY", aux$drive_tech_data_op[["ENERGY"]])
+        openxlsx::writeData(OUT, "SOC", aux$drive_tech_data_op[["SOC"]])
+        openxlsx::writeData(OUT, "POWER", aux$drive_tech_data_op[["POWER"]])
+        openxlsx::writeData(OUT, "CHARGERS_ENABLED", aux$drive_tech_data_op[["CHARGERS_ENABLED"]])
+        openxlsx::writeData(OUT, "CHARGERS_ASSIGNED", aux$drive_tech_data_op[["CHARGERS_ASSIGNED"]])
+        openxlsx::writeData(OUT, "OPTIMAL", aux$drive_tech_data_op[["OPTIMAL"]])
 
         Sys.sleep(2)
 

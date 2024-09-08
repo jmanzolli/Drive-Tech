@@ -21,6 +21,9 @@
   width: 100%;
 }
 
+.nav-underline {
+  justify-content: center;
+}
 
 .button-container {
   display: flex;
@@ -58,10 +61,6 @@
   font-size: 50px;
   margin-bottom: 10px;
 }
-
-/* .button-container .btn:hover {
-  color: #ffffff;
-} */
 
 .card-header {
   font-weight: bold;

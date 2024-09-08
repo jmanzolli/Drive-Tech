@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_loading_ui <- function(id) {
+mod_drive_loading_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::div(
@@ -31,7 +31,7 @@ mod_loading_ui <- function(id) {
 #' loading Server Functions
 #'
 #' @noRd
-mod_loading_server <- function(id, aux) {
+mod_drive_loading_server <- function(id, aux) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -63,14 +63,14 @@ mod_loading_server <- function(id, aux) {
       shinyjs::runjs('$("#loading-layout").removeClass("centered-container-init");')
       shinyjs::runjs('$("#loading-layout").addClass("centered-container");')
       
-      aux$input_data <- data
+      aux$drive_tech_data <- data
       aux$run_gurobi <- 1
     })
   })
 }
 
 ## To be copied in the UI
-# mod_loading_ui("loading_1")
+# mod_drive_loading_ui("loading_1")
 
 ## To be copied in the server
-# mod_loading_server("loading_1")
+# mod_drive_loading_server("loading_1")

@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_describe_ui <- function(id) {
+mod_drive_summary_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::div(
@@ -111,7 +111,7 @@ mod_describe_ui <- function(id) {
 #' describe Server Functions
 #'
 #' @noRd
-mod_describe_server <- function(id, aux) {
+mod_drive_summary_server <- function(id, aux) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -133,9 +133,9 @@ mod_describe_server <- function(id, aux) {
       shinyjs::hide("energy_and_tariffs_layout")
     })
     output$fleet_table <- shiny::renderTable({
-      shiny::req(aux$input_data)
+      shiny::req(aux$drive_tech_data)
 
-      aux$input_data[[1]] |> 
+      aux$drive_tech_data[[1]] |> 
         dplyr::select(`Bus ID`, `Buses`, `Length...4`, `Bus Brand`) |> 
           tidyr::drop_na() |> 
           dplyr::rename(
@@ -185,7 +185,7 @@ mod_describe_server <- function(id, aux) {
       shinyjs::hide("energy_and_tariffs_layout")
     })
     output$route_map <- leaflet::renderLeaflet({
-      shiny::req(aux$input_data)
+      shiny::req(aux$drive_tech_data)
       
       aux$map_tmp |> 
         leaflet::leaflet(
@@ -208,7 +208,7 @@ mod_describe_server <- function(id, aux) {
     })
 
     # output$route_table <- shiny::renderTable({
-    #   shiny::req(aux$input_data)
+    #   shiny::req(aux$drive_tech_data)
 
     #   data_filter <- aux$map_tmp[aux$map_tmp$idtroco == input$route_map_shape_click$id, ]
 
@@ -240,9 +240,9 @@ mod_describe_server <- function(id, aux) {
       shinyjs::hide("energy_and_tariffs_layout")
     })
     output$charging_table <- shiny::renderTable({
-      shiny::req(aux$input_data)
+      shiny::req(aux$drive_tech_data)
 
-      aux$input_data[[1]] |> 
+      aux$drive_tech_data[[1]] |> 
         dplyr::select(`Charger ID`, Charger, `Status`, `Brand`) |> 
           tidyr::drop_na() |> 
           dplyr::rename(
@@ -292,13 +292,13 @@ mod_describe_server <- function(id, aux) {
       shinyjs::show("energy_and_tariffs_layout")
     })
     output$energy_plot1 <- echarts4r::renderEcharts4r({
-      shiny::req(aux$input_data)
+      shiny::req(aux$drive_tech_data)
 
       start_time <- as.POSIXct("2024-06-23 00:00:00")
       end_time <- as.POSIXct("2024-06-23 23:45:00")
       time_sequence <- seq(from = start_time, to = end_time, by = "15 min")
 
-      aux$input_data[[1]] |> 
+      aux$drive_tech_data[[1]] |> 
         dplyr::select(`Energy price`) |> 
         tidyr::drop_na() |> 
         dplyr::mutate(
@@ -313,9 +313,9 @@ mod_describe_server <- function(id, aux) {
     })
 
     output$energy_plot2 <- echarts4r::renderEcharts4r({
-      shiny::req(aux$input_data)
+      shiny::req(aux$drive_tech_data)
 
-      aux$input_data[[1]] |> 
+      aux$drive_tech_data[[1]] |> 
         dplyr::select(`Peak power`, `Power price`) |> 
         tidyr::drop_na() |> 
         echarts4r::e_chart(`Peak power`) |> 
@@ -335,7 +335,7 @@ mod_describe_server <- function(id, aux) {
 }
 
 ## To be copied in the UI
-# mod_describe_ui("describe_1")
+# mod_drive_summary_ui("describe_1")
 
 ## To be copied in the server
-# mod_describe_server("describe_1")
+# mod_drive_summary_server("describe_1")
