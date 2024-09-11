@@ -17,6 +17,9 @@ app_server <- function(input, output, session) {
     map_tmp = sf::st_read("inst/map_gis/trocos.shx") |>  sf::st_transform(crs = 4326),
   )
 
+  #!
+  #!   DRIVE TECH
+  #!
   shiny::observe({
     aux$tab_drive_tech_selected <- input$tab_drive_tech
   })
@@ -30,5 +33,11 @@ app_server <- function(input, output, session) {
 
     shinyjs::show("describe_div")
   })
- 
+
+  #!
+  #!   GEOH
+  #!
+  mod_geoh_metrics_server("metrics")
+  mod_geoh_predicted_server("fcr", "fc")
+  mod_geoh_predicted_server("co2", "co2")
 }
