@@ -50,6 +50,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  background-color: #0f0;
 }
 
 .button-content .fas {
@@ -68,4 +69,13 @@
 
 .highlight-card-header {
   background-color: #6f42c1;
+}
+
+.bslib-value-box.default .value-box-showcase > svg.bi {
+  fill: white !important;
+}
+
+.btn-file {
+  color: white;
+  background-color: #1e90ff;
 }

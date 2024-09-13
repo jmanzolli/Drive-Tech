@@ -18,6 +18,12 @@ app_ui <- function(request) {
       title = "",
       id = "tab",
       fillable = FALSE,
+      theme = bslib::bs_theme(
+        bg = "#2E2E2E",
+        fg = "white",
+        primary = "#1e90ff",
+        "bs-body-color" = "#FF5733"
+      ),
       bslib::nav_panel(
         title = "GEOH",
         bslib::navset_underline(

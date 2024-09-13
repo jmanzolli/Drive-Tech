@@ -112,6 +112,17 @@ mod_geoh_metrics_server <- function(id) {
         defaultSelected = 1:nrow(aux$trip_data_files_load),
         columns = list(
           filename = reactable::colDef(name = "File Name")
+        ),
+        theme = reactable::reactableTheme(
+          color = "hsl(233, 9%, 87%)",
+          backgroundColor = "hsl(233, 9%, 19%)",
+          borderColor = "hsl(233, 9%, 22%)",
+          stripedColor = "hsl(233, 12%, 22%)",
+          highlightColor = "hsl(233, 12%, 24%)",
+          inputStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+          selectStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+          pageButtonHoverStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+          pageButtonActiveStyle = list(backgroundColor = "hsl(233, 9%, 28%)")
         )
       )
     })
@@ -179,19 +190,19 @@ mod_geoh_metrics_server <- function(id) {
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "Total CO2"),
           value = paste0(round(sum(trip_data$co2_v) / 1000, 2), " kg"),
           showcase = bsicons::bs_icon("wind"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. Fuel Rate"),
           value = paste0(round(mean(trip_data$fuel_rate1_gs1[trip_data$fuel_rate1_gs1 != 0]), 2), " g/s"),
           showcase = bsicons::bs_icon("fuel-pump-fill"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. Speed"),
           value = paste0(round(mean(trip_data$gps_speed_kmh1[trip_data$gps_speed_kmh1 != 0]), 2), " km/h"),
           showcase = bsicons::bs_icon("speedometer2"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. CO2 per Vehicule"),
@@ -202,7 +213,7 @@ mod_geoh_metrics_server <- function(id) {
             dplyr::pull(co2) |>
             mean(), 2), " g/s"),
           showcase = bsicons::bs_icon("speedometer2"),
-          class = "bg-danger"
+          class = "bg-primary"
         )
       )
 

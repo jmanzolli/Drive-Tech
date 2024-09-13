@@ -139,31 +139,31 @@ mod_geoh_predicted_server <- function(id, model) {
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. FCR (g/s)"),
           value = num(mean(results()$fcr), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "Total FC (g)"),
           value = num(sum(results()$fcr), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "Total CO2 (kg)"),
           value = num(sum(results()$co2), digits = 2),
           showcase = bsicons::bs_icon("speedometer2"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. CO2 (g/s)"),
           value = num(mean(results()$co2), digits = 2),
           showcase = bsicons::bs_icon("speedometer2"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", "AVG. Speed (km/h)"),
           value = num(mean(results()$gps_speed), digits = 2),
           showcase = bsicons::bs_icon("speedometer2"),
-          class = "bg-danger"
+          class = "bg-primary"
         ),
 
 
@@ -171,26 +171,26 @@ mod_geoh_predicted_server <- function(id, model) {
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("AVG. %s (g/s)", model_rate_name)),
           value = num(mean(results()$baseline), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-baseline"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("AVG. %s (g/s)", model_rate_name)),
           value = num(mean(results()$alternative1), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-alternative1"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("AVG. %s (g/s)", model_rate_name)),
           value = num(mean(results()$alternative2), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-alternative2"
+          class = "bg-primary"
         ),
 
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("Total %s (g)", model_name)),
           value = num(sum(results()$baseline), digits = 2),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-baseline"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("Total %s (g) (change %%)", model_name)),
@@ -199,7 +199,7 @@ mod_geoh_predicted_server <- function(id, model) {
             " (", scales::percent(sum(results()$alternative1)/sum(results()$baseline) - 1), ")"
           ),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-alternative1"
+          class = "bg-primary"
         ),
         bslib::value_box(
           title = shiny::span(style = "font-weight: bold; font-size: 25px", sprintf("Total %s (g) (change %%)", model_name)),
@@ -208,7 +208,7 @@ mod_geoh_predicted_server <- function(id, model) {
             " (", scales::percent(sum(results()$alternative2)/sum(results()$baseline) - 1), ")"
           ),
           showcase = bsicons::bs_icon("fuel-pump"),
-          class = "bg-alternative2"
+          class = "bg-primary"
         )
       )
 
@@ -252,11 +252,12 @@ mod_geoh_predicted_server <- function(id, model) {
         # tidyr::gather(variable, value, -DateTime) |> 
         # dplyr::group_by(variable) |> 
         echarts4r::e_chart(DateTime) |> 
-        echarts4r::e_area(baseline, color = "#fd7e14") |> 
-        echarts4r::e_line(alternative1, color = "#6ad86a") |> 
-        echarts4r::e_line(alternative2, color = "#5b0000") |> 
+        echarts4r::e_area(baseline, color = "#1e90ff") |> 
+        echarts4r::e_line(alternative1, color = "#00FF00") |> 
+        echarts4r::e_line(alternative2, color = "#DC143C") |> 
         echarts4r::e_x_axis(axisLabel = list(color = "white")) |> 
         echarts4r::e_y_axis(axisLabel = list(color = "white")) |> 
+        echarts4r::e_theme("dark-bold") |> 
         echarts4r::e_datazoom(x_index = 0, type = "slider")
     })
 

@@ -63,7 +63,7 @@ mod_drive_optimize_ui <- function(id) {
             id = ns("analytics_layout"),
             bslib::card(
               bslib::card_header(
-                class = "d-flex justify-content-center highlight-card-header",
+                class = "d-flex justify-content-center",
                 shiny::h2(shiny::strong("FLEET"))
               ),
               bslib::card_body(
@@ -93,7 +93,7 @@ mod_drive_optimize_ui <- function(id) {
             shiny::br(),
             bslib::card(
               bslib::card_header(
-                class = "d-flex justify-content-center highlight-card-header",
+                class = "d-flex justify-content-center",
                 shiny::h2(shiny::strong("BUSES"))
               ),
               bslib::card_body(
