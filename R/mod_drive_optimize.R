@@ -22,15 +22,18 @@ mod_drive_optimize_ui <- function(id) {
         fill = FALSE,
         shiny::actionButton(
           inputId = ns("results_bttn"),
-          label = shiny::div(class = "button-content", shiny::icon("chart-line"), "Results")
+          label = shiny::div(class = "button-content", shiny::icon("chart-line"), "Results"),
+          class = "btn-primary"
         ),
         shiny::actionButton(
           inputId = ns("analytics_bttn"),
-          label = shiny::div(class = "button-content", shiny::icon("file-lines"), "Analytics")
+          label = shiny::div(class = "button-content", shiny::icon("file-lines"), "Analytics"),
+          class = "btn-primary"
         ),
         shiny::actionButton(
           inputId = ns("export_bttn"),
-          label = shiny::div(class = "button-content", shiny::icon("download"), "Export")
+          label = shiny::div(class = "button-content", shiny::icon("download"), "Export"),
+          class = "btn-primary"
         )
       ),
       bslib::page_fluid(
@@ -40,6 +43,7 @@ mod_drive_optimize_ui <- function(id) {
             bslib::card(
               bslib::card_header(
                 class = "d-flex justify-content-center",
+                style = "background-color: #9A9999",
                 shiny::h2(shiny::strong("RESULTS"))
               ),
               bslib::card_body(
@@ -64,6 +68,7 @@ mod_drive_optimize_ui <- function(id) {
             bslib::card(
               bslib::card_header(
                 class = "d-flex justify-content-center",
+                style = "background-color: #9A9999",
                 shiny::h2(shiny::strong("FLEET"))
               ),
               bslib::card_body(
@@ -94,6 +99,7 @@ mod_drive_optimize_ui <- function(id) {
             bslib::card(
               bslib::card_header(
                 class = "d-flex justify-content-center",
+                style = "background-color: #9A9999",
                 shiny::h2(shiny::strong("BUSES"))
               ),
               bslib::card_body(

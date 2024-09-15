@@ -24,7 +24,6 @@ RUN R -e "pak::pak('lubridate')"
 RUN R -e "pak::pak('openxlsx')"
 RUN R -e "pak::pak('purrr')"
 RUN R -e "pak::pak('readxl')"
-RUN R -e "pak::pak('reticulate')"
 RUN R -e "pak::pak('sf')"
 RUN R -e "pak::pak('shiny')"
 RUN R -e "pak::pak('shinyalert')"
@@ -35,16 +34,24 @@ RUN R -e "pak::pak('stringr')"
 RUN R -e "pak::pak('tibble')"
 RUN R -e "pak::pak('tidyr')"
 RUN R -e "pak::pak('waiter')"
+RUN R -e "pak::pak('leaflet.extras')"
+RUN R -e "pak::pak('gt')"
+RUN R -e "pak::pak('gtExtras')"
+RUN R -e "pak::pak('reactable')"
+RUN R -e "pak::pak('plotly')"
+RUN R -e "pak::pak('shinipsum')"
+RUN R -e "pak::pak('shinydashboard')"
 
 RUN apt update
 RUN apt install git -y
 
 RUN R -e 'pak::pak("rstudio/reticulate")'
-RUN R -e "reticulate::virtualenv_create('drive_tech', python = '3.10.12')"
+RUN R -e 'reticulate::install_python("3.8")'
+RUN R -e "reticulate::virtualenv_create('drive_tech', python = '3.8')"
 
 RUN R -e "\
     reticulate::use_virtualenv('drive_tech', required = TRUE); \
-    reticulate::py_install(c('pandas', 'numpy==1.26.4', 'pyomo', 'openpyxl', 'matplotlib'))"
+    reticulate::py_install(c('pandas', 'numpy==1.24.4', 'pyomo', 'openpyxl', 'matplotlib', 'torch', 'xgboost', 'scikit-learn'))"
 
 # # ================================================================
 # #                            GUROBI 

@@ -7,7 +7,6 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList fileInput dateRangeInput icon tabPanel dataTableOutput renderDataTable incProgress bindEvent
-#' @importFrom shinydashboard box tabBox
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom plotly plotlyOutput ggplotly renderPlotly layout plot_ly event_data
 #' @importFrom dplyr select filter mutate mutate_if group_by summarise across n

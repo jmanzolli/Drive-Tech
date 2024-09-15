@@ -14,6 +14,8 @@ run_app <- function(
   ...
 ) {
   onStart <- function() {
+    reticulate::use_virtualenv('drive_tech', required = TRUE)
+
     reticulate::source_python("./inst/python/run_gurobi.py", envir = .GlobalEnv)
     reticulate::source_python("./inst/python/models.py", envir = .GlobalEnv)
 

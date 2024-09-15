@@ -22,19 +22,23 @@ mod_drive_summary_ui <- function(id) {
           fill = FALSE,
           shiny::actionButton(
             inputId = ns("fleet_information_bttn"),
-            label = shiny::div(class = "button-content", shiny::icon("van-shuttle"), "Fleet information")
+            label = shiny::div(class = "button-content", shiny::icon("van-shuttle"), "Fleet information"),
+            class = "btn-primary"
           ),
           shiny::actionButton(
             inputId = ns("route_and_scheduling_bttn"),
-            label = shiny::div(class = "button-content", shiny::icon("route"), "Route and scheduling")
+            label = shiny::div(class = "button-content", shiny::icon("route"), "Route and scheduling"),
+            class = "btn-primary"
           ),
           shiny::actionButton(
             inputId = ns("charging_infrastructure_bttn"),
-            label = shiny::div(class = "button-content", shiny::icon("gas-pump"), "Charging infrastructure")
+            label = shiny::div(class = "button-content", shiny::icon("gas-pump"), "Charging infrastructure"),
+            class = "btn-primary"
           ),
           shiny::actionButton(
             inputId = ns("energy_and_tariffs_bttn"),
-            label = shiny::div(class = "button-content", shiny::icon("plug-circle-bolt"), "Energy and tariffs")
+            label = shiny::div(class = "button-content", shiny::icon("plug-circle-bolt"), "Energy and tariffs"),
+            class = "btn-primary"
           )
         ),
         shiny::div(

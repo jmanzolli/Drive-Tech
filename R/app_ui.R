@@ -14,55 +14,56 @@ app_ui <- function(request) {
     #   mod_welcome_ui("welcome_page")
     # ),
 
-    bslib::page_navbar(
-      title = "",
-      id = "tab",
-      fillable = FALSE,
+    bslib::page_fluid(
       theme = bslib::bs_theme(
         bg = "#2E2E2E",
         fg = "white",
         primary = "#1e90ff",
         "bs-body-color" = "#FF5733"
       ),
-      bslib::nav_panel(
-        title = "GEOH",
-        bslib::navset_underline(
-          id = "tab_geoh",
-          bslib::nav_panel(
-            title = "Metrics",
-            mod_geoh_metrics_ui("metrics")
-          ),
-          bslib::nav_panel(
-            title = "Predictions (FCR)",
-            mod_geoh_predicted_ui("fcr", available_models_fcr)
-          ),
-          bslib::nav_panel(
-            title = "Predictions (CO2)",
-            mod_geoh_predicted_ui("co2", available_models_co2)
-          )
-        )
-      ),
-      bslib::nav_panel(
-        title = "DRIVE TECH",
-        bslib::navset_underline(
-          id = "tab_drive_tech",
-          bslib::nav_panel(
-            title = "Summary",
-            mod_drive_loading_ui("loading"),
-            shinyjs::hidden(
-              shiny::div(
-                id = "describe_div",
-                mod_drive_summary_ui("describe")
-              )
+      bslib::navset_pill(
+        id = "tab",
+        bslib::nav_panel(
+          title = "EMISSIONS ESTIMATOR",
+          bslib::navset_pill(
+            id = "tab_geoh",
+            bslib::nav_panel(
+              title = "Metrics",
+              mod_geoh_metrics_ui("metrics")
+            ),
+            bslib::nav_panel(
+              title = "Predictions (FCR)",
+              mod_geoh_predicted_ui("fcr", available_models_fcr)
+            ),
+            bslib::nav_panel(
+              title = "Predictions (CO2)",
+              mod_geoh_predicted_ui("co2", available_models_co2)
             )
-          ),
-          bslib::nav_panel(
-            title = "Optimization",
-            mod_drive_optimize_ui("optimize")
+          )
+        ),
+        bslib::nav_panel(
+          title = "FLEET MANAGEMENT",
+          bslib::navset_pill(
+            id = "tab_drive_tech",
+            bslib::nav_panel(
+              title = "Summary",
+              mod_drive_loading_ui("loading"),
+              shinyjs::hidden(
+                shiny::div(
+                  id = "describe_div",
+                  mod_drive_summary_ui("describe")
+                )
+              )
+            ),
+            bslib::nav_panel(
+              title = "Optimization",
+              mod_drive_optimize_ui("optimize")
+            )
           )
         )
       )
     )
+
   )
 }
 

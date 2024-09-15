@@ -19,10 +19,17 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  font-weight: bolder;
 }
 
-.nav-underline {
+.nav-underline, .nav-pills {
   justify-content: center;
+  margin-top: 17px;
+}
+
+.nav-link {
+  color: white !important;
+  font-weight: bold !important;
 }
 
 .button-container {
@@ -50,7 +57,6 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  background-color: #0f0;
 }
 
 .button-content .fas {

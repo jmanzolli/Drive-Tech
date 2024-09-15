@@ -55,7 +55,8 @@ mod_geoh_predicted_ui <- function(id, available_models) {
           ),
           actionButton(
             inputId = ns("run"),
-            label = "Prediction"
+            label = "Prediction",
+            class = "btn-primary"
           )
         ),
         shiny::uiOutput(ns("indicators")),
@@ -91,12 +92,12 @@ mod_geoh_predicted_server <- function(id, model) {
 
       data_emissions <- data_emissions()
 
-      saveRDS(
-        list(
-          datapath = input$base_model, 
-          data_test = data_emissions
-        ), "tmp.rds"
-      )
+      # saveRDS(
+      #   list(
+      #     datapath = input$base_model, 
+      #     data_test = data_emissions
+      #   ), "tmp.rds"
+      # )
 
       if (model == "fc") {
         r0 <- tibble::as_tibble(predict_fcr_model(input$base_model, data_emissions))
