@@ -21,8 +21,22 @@ app_ui <- function(request) {
         primary = "#1e90ff",
         "bs-body-color" = "#FF5733"
       ),
+
+      shiny::column(
+        12, 
+        align = "center", 
+        style = "padding: 31px",
+        shiny::h1(
+          style = "font-weight: bold",
+          "Driving Electrification and Emissions Analysis for Climate Action"
+        )
+      ),
       bslib::navset_pill(
         id = "tab",
+        bslib::nav_panel(
+          title = "WELCOME",
+          mod_welcome_ui("welcome")
+        ),
         bslib::nav_panel(
           title = "EMISSIONS ESTIMATOR",
           bslib::navset_pill(
