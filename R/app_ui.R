@@ -60,7 +60,7 @@ app_ui <- function(request) {
           bslib::navset_pill(
             id = "tab_drive_tech",
             bslib::nav_panel(
-              title = "Summary",
+              title = "Data Input",
               mod_drive_loading_ui("loading"),
               shinyjs::hidden(
                 shiny::div(

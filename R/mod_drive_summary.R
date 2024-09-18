@@ -200,7 +200,9 @@ mod_drive_summary_server <- function(id, aux) {
         leaflet::addPolylines(layerId = ~idtroco, color = "darkgrey")
     })
     shiny::observeEvent(input$route_map_shape_click, {
-      data_filter <- aux$map_tmp[aux$map_tmp$idtroco == input$route_map_shape_click$id, ]
+      id_selected <- aux$map_tmp[aux$map_tmp$idtroco == input$route_map_shape_click$id, ]
+      
+      data_filter <- aux$map_tmp[aux$map_tmp$codseroper %in% unique(id_selected$codseroper), ]
 
       leaflet::leafletProxy(ns("route_map")) |> 
         leaflet::clearGroup("highlighted") |> 

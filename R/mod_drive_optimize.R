@@ -176,7 +176,7 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         if (aux$tab_drive_tech_selected == "Optimization" & is.null(aux$drive_tech_data)) {
           bslib::nav_select(
             id = "tab_drive_tech",
-            selected = "Summary",
+            selected = "Data Input",
             session = global_session
           )
           shinyalert::shinyalert(
@@ -380,35 +380,40 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
       shiny::req(aux$drive_tech_data_op)
 
       bslib::layout_column_wrap(
-        width = 4,
-        height = "115px",
-        bslib::value_box(
-          title = "Optimal value",
-          value = euro(aux$drive_tech_data_op$OPTIMAL[[1]]),
-          showcase = bsicons::bs_icon("currency-euro"),
-          theme = "primary",
-          shiny::p("Charging costs")
+        width = "800px",
+        bslib::layout_column_wrap(
+          width = 1/2,
+          bslib::value_box(
+            title = "Optimal value",
+            value = euro(aux$drive_tech_data_op$OPTIMAL[[1]]),
+            showcase = bsicons::bs_icon("currency-euro"),
+            theme = "primary",
+            shiny::p("Charging costs")
+          ),
+          bslib::value_box(
+            title = "Power Peak",
+            value = "",
+            showcase = bsicons::bs_icon("lightning-charge-fill"),
+            theme = "primary",
+            shiny::p("Not available")
+          )
         ),
-        bslib::value_box(
-          title = "Power Peak",
-          value = "",
-          showcase = bsicons::bs_icon("lightning-charge-fill"),
-          theme = "primary",
-          shiny::p("Not available")
-        ),
-        bslib::value_box(
-          title = "Discharging revenues",
-          value = "",
-          showcase = bsicons::bs_icon("lightning-charge"),
-          theme = "primary",
-          shiny::p("Not available")
-        ),
-        bslib::value_box(
-          title = "Degradation costs",
-          value = "",
-          showcase = bsicons::bs_icon("currency-euro"),
-          theme = "primary",
-          shiny::p("Not available")
+        bslib::layout_column_wrap(
+          width = 1/2,
+          bslib::value_box(
+            title = "Discharging revenues",
+            value = "",
+            showcase = bsicons::bs_icon("lightning-charge"),
+            theme = "primary",
+            shiny::p("Not available")
+          ),
+          bslib::value_box(
+            title = "Degradation costs",
+            value = "",
+            showcase = bsicons::bs_icon("currency-euro"),
+            theme = "primary",
+            shiny::p("Not available")
+          )
         )
       )
     })
