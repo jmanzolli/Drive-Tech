@@ -16,7 +16,10 @@
 ## Dependencies ----
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.packages('attachment') # if needed.
-pkgs <- attachment::att_amend_desc()
+# pkgs <- attachment::att_amend_desc()
+pkgs <- attachment::att_from_rscripts()
+pkgs <- pkgs[!(pkgs %in% c("tibble", "purrr", "dplyr", "stringr", "readr", "ggplot2", "forcats", "tidyr", "config"))]
+purrr::map(pkgs, ~ usethis::use_package(.x, min_version = TRUE))
 
 ## Add modules ----
 ## Create a module infrastructure in R/

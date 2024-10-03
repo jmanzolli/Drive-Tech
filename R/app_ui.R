@@ -62,12 +62,10 @@ app_ui <- function(request) {
             bslib::nav_panel(
               title = "Data Input",
               mod_drive_loading_ui("loading"),
-              shinyjs::hidden(
-                shiny::div(
-                  id = "describe_div",
-                  mod_drive_summary_ui("describe")
-                )
-              )
+            ),
+            bslib::nav_panel(
+              title = "Summary",
+              mod_drive_summary_ui("describe")
             ),
             bslib::nav_panel(
               title = "Optimization",

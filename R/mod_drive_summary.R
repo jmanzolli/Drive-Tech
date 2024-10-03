@@ -69,7 +69,7 @@ mod_drive_summary_ui <- function(id) {
                 bslib::card_body(
                   leaflet::leafletOutput(ns("route_map"), height = 675) |> 
                     shinycssloaders::withSpinner(),
-                  # shiny::tableOutput(ns("route_table"))
+                  shiny::uiOutput(ns("route_info"))
                 )
               )
             )
@@ -211,6 +211,29 @@ mod_drive_summary_server <- function(id, aux) {
           color = "red", 
           group = "highlighted"
         )
+
+      print(list(
+        line = unique(data_filter$codseroper),
+        origem = unique(data_filter$origem),
+        destination = unique(data_filter$destino)
+      ))
+
+       output$route_info <- shiny::renderUI({
+          bslib::layout_column_wrap(
+            bslib::value_box(
+              title = "Line",
+              value = unique(data_filter$codseroper)[1]
+            ),
+            bslib::value_box(
+              title = "Origin",
+              value = unique(data_filter$origem)[1]
+            ),
+            bslib::value_box(
+              title = "Destination",
+              value = unique(data_filter$destino)[1]
+            )
+          )
+       })
     })
 
     # output$route_table <- shiny::renderTable({

@@ -45,7 +45,7 @@ RUN R -e "pak::pak('shinydashboard')"
 RUN apt update
 RUN apt install git -y
 
-RUN R -e 'pak::pak("rstudio/reticulate")'
+RUN R -e 'pak::pak("rstudio/reticulate@v1.38.0")'
 RUN R -e 'reticulate::install_python("3.8")'
 RUN R -e "reticulate::virtualenv_create('drive_tech', python = '3.8')"
 

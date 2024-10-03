@@ -50,14 +50,10 @@ mod_drive_optimize_ui <- function(id) {
                 shiny::uiOutput(ns("results_output")),
                 bslib::layout_column_wrap(
                   width = 1 / 2,
-                  shiny::column(
-                    12,
-                    echarts4r::echarts4rOutput(ns("results_plot1")),
-                    shiny::br(),
-                    echarts4r::echarts4rOutput(ns("results_plot2"))
-                  ),
-                  echarts4r::echarts4rOutput(ns("results_plot3"))
-                )
+                  echarts4r::echarts4rOutput(ns("results_plot1")),
+                  echarts4r::echarts4rOutput(ns("results_plot2"))
+                ),
+                echarts4r::echarts4rOutput(ns("results_plot3"), height = "600px")
               )
             )
           )
@@ -165,91 +161,9 @@ mod_drive_optimize_ui <- function(id) {
 #' optimize Server Functions
 #'
 #' @noRd
-mod_drive_optimize_server <- function(id, aux, global_session) {
+mod_drive_optimize_server <- function(id, aux) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
-
-    shiny::observe({
-      shiny::req(aux$tab_drive_tech_selected)
-
-      shiny::isolate({
-        if (aux$tab_drive_tech_selected == "Optimization" & is.null(aux$drive_tech_data)) {
-          bslib::nav_select(
-            id = "tab_drive_tech",
-            selected = "Data Input",
-            session = global_session
-          )
-          shinyalert::shinyalert(
-            title = "No data uploaded",
-            text = "Upload the data first and then optimize",
-            type = "error"
-          )
-        } else if (aux$tab_drive_tech_selected == "Optimization") {
-          if (aux$run_gurobi == 1) {
-            session$userData$w$show()
-
-            # log_file <<- tempfile(fileext = ".log")
-            # result <- run_gurobi(aux$drive_tech_data, log_file)
-            # if (isFALSE(result)) {
-            #   result <- list(
-            #     ENERGY = NULL,
-            #     SOC = NULL,
-            #     POWER = NULL,
-            #     CHARGERS_ENABLED = NULL,
-            #     CHARGERS_ASSIGNED = NULL,
-            #     OPTIMAL = NULL,
-            #     ANALYTICS = NULL
-            #   )
-            # } 
-            # if (file.exists(log_file)) {
-            #   result$log <- paste0(readLines(log_file), collapse = "\n")
-            # } else {
-            #   result$log <- NULL
-            # }
-            # saveRDS(result, "result.rds")
-            result <- readRDS("result.rds")
-
-            if (!is.null(result$CHARGERS_ASSIGNED)) {
-              result$CHARGERS_ASSIGNED <- result$CHARGERS_ASSIGNED |>
-                dplyr::mutate(
-                  Time = lubridate::hm(Time),
-                  Time = lubridate::hour(Time) + (lubridate::minute(Time) / 60)
-                )
-
-              aux$drive_tech_data_op <- result
-
-              aux$run_gurobi <- 0
-            }
-
-            shiny::showModal(
-              shiny::modalDialog(
-                title = "Gurobi optimization",
-                shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
-                easyClose = TRUE,
-                footer = NULL,
-                size = "xl"
-              )
-            )
-
-            if (is.null(result$CHARGERS_ASSIGNED)) {
-              shinyalert::shinyalert(type = "error", title = "Something went wrong...")
-            }
-
-            session$userData$w$hide()
-          } else {
-            shiny::showModal(
-              shiny::modalDialog(
-                title = "Gurobi optimization",
-                shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
-                easyClose = TRUE,
-                footer = NULL,
-                size = "xl"
-              )
-            )
-          }
-        }
-      })
-    })
 
     shiny::observe({
       shiny::req(aux$drive_tech_data_op)
@@ -372,6 +286,15 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
             fontSize = 12,
             fontWeight = "bold"
           )
+        ) |> 
+        echarts4r::e_text_style(
+          text = "Chargers",
+          left = "center",
+          bottom = 20,
+          textStyle = list(
+            fontSize = 12,
+            fontWeight = "bold"
+          )
         )
 
     })
@@ -443,7 +366,7 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         width = 1,
         bslib::value_box(
           theme = "primary",
-          title = "Total Energy Consumption",
+          title = "Energy Consumption Vehicles Combined",
           value = paste0(total, " kWh")
         ),
         bslib::value_box(
@@ -474,12 +397,6 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
         
-      avg_soc <- aux$drive_tech_data_op$ANALYTICS[["Avg SOC Per Bus"]] |> 
-        tibble::as_tibble() |> 
-        tibble::rownames_to_column(var = "Bus") |> 
-        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
-        dplyr::pull(2)
-
       bslib::layout_column_wrap(
         width = 1,
         bslib::value_box(
@@ -490,17 +407,12 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         bslib::value_box(
           theme = "primary",
           title = "Maximum SOC",
-          value = paste0(round(maximum_soc, 2), " kWh")
+          value = paste0(round(maximum_soc, 2), " %")
         ),
         bslib::value_box(
           theme = "primary",
-          title = "Mininum Energy",
-          value = paste0(round(minimum_soc, 2), " kWh")
-        ),
-        bslib::value_box(
-          theme = "primary",
-          title = "Average SOC",
-          value = scales::percent(avg_soc / 100)
+          title = "Minimum SOC",
+          value = paste0(round(minimum_soc, 2), " %")
         )
       )
     })
@@ -514,13 +426,13 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         width = 1,
         bslib::value_box(
           theme = "primary",
-          title = "Total Charging Time",
+          title = "Charging Time Vehicles Combined",
           value = paste0(round(total, 2), "h")
         ),
         bslib::value_box(
           theme = "primary",
           title = "Average Charging Time",
-          value = paste0(round(average, 2), "h")
+          value = paste0(decimal_to_hm(average), "/bus")
         )
       )
     }))
@@ -530,6 +442,10 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
       charging_window <- aux$drive_tech_data_op$ANALYTICS[["Charging Window Per Bus"]] |>
         tibble::rownames_to_column(var = "Bus") |> 
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+")))
+      
+      charging_time <- as.numeric(lubridate::hm(charging_window$max)) - as.numeric(lubridate::hm(charging_window$min))
+      charging_time <- decimal_to_hm(charging_time / 3600)
+
       charging_window <- paste0(charging_window$min, " to ", charging_window$max)
 
       charging_number <- aux$drive_tech_data_op$ANALYTICS[["Charger Number Per Bus"]] |>
@@ -538,24 +454,19 @@ mod_drive_optimize_server <- function(id, aux, global_session) {
         dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
         dplyr::pull(2)
 
-      charging_time <- aux$drive_tech_data_op$ANALYTICS[["Charging Time Per Bus"]] |> 
-        tibble::as_tibble() |> 
-        tibble::rownames_to_column(var = "Bus") |> 
-        dplyr::filter(Bus == as.integer(stringr::str_extract(input$bus_selected, "[0-9]+"))) |> 
-        dplyr::pull(2)
 
       bslib::layout_column_wrap(
         width = 1,
         bslib::value_box(
           theme = "primary",
           title = "Charging time",
-          value = paste0(charging_time, "h")
+          value = charging_time
         ),
         bslib::value_box(
           theme = "primary",
           title = "Charging window",
           value = charging_window
-        ),
+        ),  
         bslib::value_box(
           theme = "primary",
           title = "Charger number",
