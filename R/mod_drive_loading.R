@@ -12,7 +12,8 @@ mod_drive_loading_ui <- function(id) {
   shiny::tagList(
     shiny::div(
       id = ns("layout"),
-      class = "centered-container-init",
+      style = "padding-top: 31px",
+      # class = "centered-container-init",
       shiny::column(
         12,
         align = "center",
@@ -22,6 +23,75 @@ mod_drive_loading_ui <- function(id) {
           multiple = FALSE,
           accept = ".xlsx",
           width = "400px"
+        )
+      )
+    ),
+    col_12(
+      style = "padding: 31px;",
+      align = "center",
+      shiny::h3("OR")
+    ),
+    bslib::layout_columns(
+      width = 1/2,
+      # TODO use shinymatrix to input the data here
+      shiny::div(),
+      bslib::layout_column_wrap(
+        width = 1/3,
+        shinyWidgets::autonumericInput(
+          inputId = "timestamp",
+          label = "Timestamp",
+          value = 4,
+          align = "center",
+          decimalPlaces = 0,
+          minimumValue = 1
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "power",
+          label = "Power",
+          value = 100,
+          align = "center",
+          decimalPlaces = 2,
+          minimumValue = 1
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "energy_consumption",
+          label = "Energy Consumption",
+          value = 0.9,
+          align = "center",
+          decimalPlaces = 2,
+          minimumValue = 0.01
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "avg_velocity",
+          label = "AVG Velocity",
+          value = 12,
+          align = "center",
+          decimalPlaces = 2,
+          minimumValue = 0.01
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "avg_energy_price",
+          label = "AVG Energy Price",
+          value = 0.9034,
+          align = "center",
+          decimalPlaces = 4,
+          minimumValue = 0.0001
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "bus_energy",
+          label = "Bus Energy",
+          value = 200,
+          align = "center",
+          decimalPlaces = 0,
+          minimumValue = 1
+        ),
+        shinyWidgets::autonumericInput(
+          inputId = "n_charger",
+          label = "Qt Chargers",
+          value = 10,
+          align = "center",
+          decimalPlaces = 0,
+          minimumValue = 1
         )
       )
     )
@@ -60,8 +130,8 @@ mod_drive_loading_server <- function(id, aux) {
 
       session$userData$w$hide()
 
-      shinyjs::runjs('$("#loading-layout").removeClass("centered-container-init");')
-      shinyjs::runjs('$("#loading-layout").addClass("centered-container");')
+      # shinyjs::runjs('$("#loading-layout").removeClass("centered-container-init");')
+      # shinyjs::runjs('$("#loading-layout").addClass("centered-container");')
       
       aux$drive_tech_data <- data
       aux$run_gurobi <- 1
