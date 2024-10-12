@@ -31,35 +31,21 @@ mod_drive_loading_ui <- function(id) {
       align = "center",
       shiny::h3("OR")
     ),
-    bslib::layout_columns(
-      width = 1/2,
-      # TODO use shinymatrix to input the data here
-      shiny::div(),
+    col_12(
+      align = "center",
       bslib::layout_column_wrap(
-        width = 1/3,
-        shinyWidgets::autonumericInput(
-          inputId = "timestamp",
-          label = "Timestamp",
-          value = 4,
-          align = "center",
-          decimalPlaces = 0,
-          minimumValue = 1
-        ),
-        shinyWidgets::autonumericInput(
-          inputId = "power",
-          label = "Power",
-          value = 100,
-          align = "center",
-          decimalPlaces = 2,
-          minimumValue = 1
-        ),
+        width = "200px",
+        fixed_width = TRUE,
+        class = "justify-content-center",
         shinyWidgets::autonumericInput(
           inputId = "energy_consumption",
           label = "Energy Consumption",
           value = 0.9,
           align = "center",
           decimalPlaces = 2,
-          minimumValue = 0.01
+          minimumValue = 0.01,
+          currencySymbolPlacement = "s",
+          currencySymbol = " kWh/km"
         ),
         shinyWidgets::autonumericInput(
           inputId = "avg_velocity",
@@ -67,32 +53,26 @@ mod_drive_loading_ui <- function(id) {
           value = 12,
           align = "center",
           decimalPlaces = 2,
-          minimumValue = 0.01
+          minimumValue = 0.01,
+          currencySymbol = " km/h",
+          currencySymbolPlacement = "s"
         ),
         shinyWidgets::autonumericInput(
-          inputId = "avg_energy_price",
-          label = "AVG Energy Price",
-          value = 0.9034,
+          inputId = "start_energy",
+          label = "Starting Energy",
+          value = 12,
           align = "center",
-          decimalPlaces = 4,
-          minimumValue = 0.0001
-        ),
-        shinyWidgets::autonumericInput(
-          inputId = "bus_energy",
-          label = "Bus Energy",
-          value = 200,
-          align = "center",
-          decimalPlaces = 0,
-          minimumValue = 1
-        ),
-        shinyWidgets::autonumericInput(
-          inputId = "n_charger",
-          label = "Qt Chargers",
-          value = 10,
-          align = "center",
-          decimalPlaces = 0,
-          minimumValue = 1
+          decimalPlaces = 2,
+          minimumValue = 1,
+          currencySymbol = " %",
+          currencySymbolPlacement = "s"
         )
+      ),
+      bslib::layout_columns(
+        col_widths = c(3,3,6),
+        mod_drive_loading_bus_ui(ns("bus_table")),
+        shiny::div(),
+        shiny::div()
       )
     )
   )
@@ -136,6 +116,16 @@ mod_drive_loading_server <- function(id, aux) {
       aux$drive_tech_data <- data
       aux$run_gurobi <- 1
     })
+
+    mod_drive_loading_bus_server("bus_table", aux)
+
+
+    shiny::observe({
+      timestamp <- 4
+      avg_velocity <- 12
+
+    }) |> 
+      shiny::bindEvent(input$submit)
   })
 }
 

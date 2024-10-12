@@ -1,4 +1,4 @@
-FROM rocker/shiny-verse:4.2
+FROM rocker/shiny-verse:4.4
 
 COPY .Renviron_github_pat root/.Renviron
 
@@ -12,35 +12,32 @@ RUN apt install python3 -y
 RUN apt install python3-pip -y
 RUN apt install python3-venv -y
 
-RUN R -e "pak::pak('bsicons')"
-RUN R -e "pak::pak('bslib')"
-RUN R -e "pak::pak('dplyr')"
-RUN R -e "pak::pak('echarts4r')"
-RUN R -e "pak::pak('formattable')"
-RUN R -e "pak::pak('ggplot2')"
-RUN R -e "pak::pak('golem')"
-RUN R -e "pak::pak('leaflet')"
-RUN R -e "pak::pak('lubridate')"
-RUN R -e "pak::pak('openxlsx')"
-RUN R -e "pak::pak('purrr')"
-RUN R -e "pak::pak('readxl')"
-RUN R -e "pak::pak('sf')"
-RUN R -e "pak::pak('shiny')"
-RUN R -e "pak::pak('shinyalert')"
-RUN R -e "pak::pak('shinycssloaders')"
-RUN R -e "pak::pak('shinyjs')"
-RUN R -e "pak::pak('shinyWidgets')"
-RUN R -e "pak::pak('stringr')"
-RUN R -e "pak::pak('tibble')"
-RUN R -e "pak::pak('tidyr')"
-RUN R -e "pak::pak('waiter')"
-RUN R -e "pak::pak('leaflet.extras')"
-RUN R -e "pak::pak('gt')"
-RUN R -e "pak::pak('gtExtras')"
-RUN R -e "pak::pak('reactable')"
-RUN R -e "pak::pak('plotly')"
-RUN R -e "pak::pak('shinipsum')"
-RUN R -e "pak::pak('shinydashboard')"
+RUN R -e "pak::pak('bsicons@0.1.2')"
+RUN R -e "pak::pak('bslib@0.8.0')"
+RUN R -e "pak::pak('echarts4r@0.4.5')"
+RUN R -e "pak::pak('formattable@0.2.1')"
+RUN R -e "pak::pak('golem@0.5.1')"
+RUN R -e "pak::pak('gt@0.11.0')"
+RUN R -e "pak::pak('gtExtras@0.5.0')"
+RUN R -e "pak::pak('leaflet@2.2.2')"
+RUN R -e "pak::pak('leaflet.extras@2.0.1')"
+RUN R -e "pak::pak('lubridate@1.9.3')"
+RUN R -e "pak::pak('openxlsx@4.2.7.1')"
+RUN R -e "pak::pak('plotly@4.10.4')"
+RUN R -e "pak::pak('RColorBrewer@1.1.3')"
+RUN R -e "pak::pak('reactable@0.4.4')"
+RUN R -e "pak::pak('readxl@1.4.3')"
+RUN R -e "pak::pak('reticulate@1.38.0')"
+RUN R -e "pak::pak('scales@1.3.0')"
+RUN R -e "pak::pak('sf@1.0.17')"
+RUN R -e "pak::pak('shinipsum@0.1.1')"
+RUN R -e "pak::pak('shiny@1.9.1')"
+RUN R -e "pak::pak('shinyalert@3.1.0')"
+RUN R -e "pak::pak('shinycssloaders@1.1.0')"
+RUN R -e "pak::pak('shinydashboard@0.7.2')"
+RUN R -e "pak::pak('shinyjs@2.1.0')"
+RUN R -e "pak::pak('shinyWidgets@0.8.7')"
+RUN R -e "pak::pak('waiter@0.2.5')"
 
 RUN apt update
 RUN apt install git -y

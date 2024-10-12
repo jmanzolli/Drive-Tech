@@ -14,6 +14,9 @@ app_server <- function(input, output, session) {
     drive_tech_data = NULL,
     drive_tech_data_op = NULL,
     map_tmp = sf::st_read("inst/map_gis/trocos.shx") |> sf::st_transform(crs = 4326),
+    drive_tech_manual_input_bus = NULL,
+    drive_tech_manual_input_charger = NULL,
+    drive_tech_manual_input_route = NULL
   )
 
   # !

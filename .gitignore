@@ -222,3 +222,4 @@ cython_debug/
 #.idea/
 shinyproxy.pem
 gurobi_wlm.lic
+docker
