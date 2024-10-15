@@ -100,7 +100,8 @@ golem_add_external_resources <- function() {
       app_title = "driveTech"
     ),
     waiter::useWaiter(),
-    shinyjs::useShinyjs()
+    shinyjs::useShinyjs(),
+     reactable.extras::reactable_extras_dependency()
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
   )

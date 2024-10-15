@@ -69,10 +69,11 @@ mod_drive_loading_ui <- function(id) {
         )
       ),
       bslib::layout_columns(
-        col_widths = c(3,3,6),
+        col_widths = c(3,3,4,2),
         mod_drive_loading_bus_ui(ns("bus_table")),
-        shiny::div(),
-        shiny::div()
+        mod_drive_loading_charge_ui(ns("charger_table")),
+        mod_drive_loading_route_ui(ns("route_table")),
+        mod_drive_loading_price_ui(ns("price_table"))
       )
     )
   )
@@ -118,7 +119,9 @@ mod_drive_loading_server <- function(id, aux) {
     })
 
     mod_drive_loading_bus_server("bus_table", aux)
-
+    mod_drive_loading_charge_server("charger_table", aux)
+    mod_drive_loading_route_server("route_table", aux)
+    mod_drive_loading_price_server("price_table", aux)
 
     shiny::observe({
       timestamp <- 4
