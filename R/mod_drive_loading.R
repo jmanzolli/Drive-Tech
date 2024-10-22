@@ -32,48 +32,12 @@ mod_drive_loading_ui <- function(id) {
       shiny::h3("OR")
     ),
     col_12(
+      style = "padding: 31px;",
       align = "center",
-      bslib::layout_column_wrap(
-        width = "200px",
-        fixed_width = TRUE,
-        class = "justify-content-center",
-        shinyWidgets::autonumericInput(
-          inputId = "energy_consumption",
-          label = "Energy Consumption",
-          value = 0.9,
-          align = "center",
-          decimalPlaces = 2,
-          minimumValue = 0.01,
-          currencySymbolPlacement = "s",
-          currencySymbol = " kWh/km"
-        ),
-        shinyWidgets::autonumericInput(
-          inputId = "avg_velocity",
-          label = "AVG Velocity",
-          value = 12,
-          align = "center",
-          decimalPlaces = 2,
-          minimumValue = 0.01,
-          currencySymbol = " km/h",
-          currencySymbolPlacement = "s"
-        ),
-        shinyWidgets::autonumericInput(
-          inputId = "start_energy",
-          label = "Starting Energy",
-          value = 12,
-          align = "center",
-          decimalPlaces = 2,
-          minimumValue = 1,
-          currencySymbol = " %",
-          currencySymbolPlacement = "s"
-        )
-      ),
-      bslib::layout_columns(
-        col_widths = c(3,3,4,2),
-        mod_drive_loading_bus_ui(ns("bus_table")),
-        mod_drive_loading_charge_ui(ns("charger_table")),
-        mod_drive_loading_route_ui(ns("route_table")),
-        mod_drive_loading_price_ui(ns("price_table"))
+      shiny::actionButton(
+        inputId = ns("manual_input"),
+        label = "Manual Input",
+        class = "btn btn-primary"
       )
     )
   )
@@ -118,17 +82,137 @@ mod_drive_loading_server <- function(id, aux) {
       aux$run_gurobi <- 1
     })
 
+    #!
+    #!   VALIDATION
+    #!
+    iv <- shinyvalidate::InputValidator$new()
+    iv$add_rule(
+      "energy_consumption",
+      shinyvalidate::compose_rules(
+        shinyvalidate::sv_required(),
+        shinyvalidate::sv_between(0.5, 2)
+      )
+    )
+    iv$add_rule(
+      "avg_velocity",
+      shinyvalidate::compose_rules(
+        shinyvalidate::sv_required(),
+        shinyvalidate::sv_between(8, 20)
+      )
+    )
+    iv$add_rule(
+      "start_energy",
+      shinyvalidate::compose_rules(
+        shinyvalidate::sv_required(),
+        shinyvalidate::sv_between(10, 30)
+      )
+    )
+    iv$enable()
+
+    #!
+    #!   EXTRA MODULES - CRUDS
+    #!    
     mod_drive_loading_bus_server("bus_table", aux)
     mod_drive_loading_charge_server("charger_table", aux)
     mod_drive_loading_route_server("route_table", aux)
     mod_drive_loading_price_server("price_table", aux)
 
     shiny::observe({
-      timestamp <- 4
-      avg_velocity <- 12
+      if (nrow(aux$drive_tech_manual_input_bus) < 2) {
+        shinyalert::shinyalert(
+          "The number of buses need to be great or equal one",
+          type = "error"
+        )
+      } else if (nrow(aux$drive_tech_manual_input_charger) == 0) {
+        shinyalert::shinyalert(
+          "Chargers requires minimum one charger",
+          type = "error"
+        )
+      } else if (nrow(aux$drive_tech_manual_input_bus) != nrow(aux$drive_tech_manual_input_route)) {
+        shinyalert::shinyalert(
+          "There should be as many routes as buses.",
+          type = "error"
+        )
+      } else {
+        final_payload <- list(
+          energy_consumption = input$energy_consumption,
+          avg_velocity = input$avg_velocity,
+          start_energy = input$start_energy,
+          drive_tech_manual_input_bus = aux$drive_tech_manual_input_bus,
+          drive_tech_manual_input_charger = aux$drive_tech_manual_input_charger,
+          drive_tech_manual_input_route = aux$drive_tech_manual_input_route,
+          drive_tech_manual_input_price = aux$drive_tech_manual_input_price
+        )
 
+        message(jsonlite::toJSON(final_payload, pretty = TRUE))
+
+        aux$drive_tech_manual_data <- final_payload
+      }
     }) |> 
       shiny::bindEvent(input$submit)
+
+    shiny::observe({
+      shiny::showModal(shiny::modalDialog(
+        title = "Manual Input",
+        size = "xl",
+        col_12(
+          align = "center",
+          bslib::layout_column_wrap(
+            width = "200px",
+            fixed_width = TRUE,
+            class = "justify-content-center",
+            shinyWidgets::autonumericInput(
+              inputId = ns("energy_consumption"),
+              label = "Energy Consumption",
+              value = 0.9,
+              align = "center",
+              decimalPlaces = 2,
+              # minimumValue = 0.01,
+              currencySymbolPlacement = "s",
+              currencySymbol = " kWh/km"
+            ),
+            shinyWidgets::autonumericInput(
+              inputId = ns("avg_velocity"),
+              label = "AVG Velocity",
+              value = 12,
+              align = "center",
+              decimalPlaces = 2,
+              # minimumValue = 0.01,
+              currencySymbol = " km/h",
+              currencySymbolPlacement = "s"
+            ),
+            shinyWidgets::autonumericInput(
+              inputId = ns("start_energy"),
+              label = "Starting Energy",
+              value = 12,
+              align = "center",
+              decimalPlaces = 2,
+              # minimumValue = 1,
+              currencySymbol = " %",
+              currencySymbolPlacement = "s"
+            )
+          ),
+          bslib::layout_column_wrap(
+            width = 1/2,
+            heights_equal = "row",
+            mod_drive_loading_bus_ui(ns("bus_table")),
+            mod_drive_loading_charge_ui(ns("charger_table")),
+            mod_drive_loading_route_ui(ns("route_table")),
+            mod_drive_loading_price_ui(ns("price_table"))
+          )
+        ),
+        easyClose = TRUE, 
+        footer = tagList(
+          shiny::modalButton("Close"),
+          shiny::actionButton(
+            inputId = ns("submit"),
+            label = "Submit",
+            class = "btn btn-primary"
+          )
+        )
+      ))
+    }) |> 
+      shiny::bindEvent(input$manual_input)
   })
 }
 

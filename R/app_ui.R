@@ -3,6 +3,7 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' 
 #' @noRd
 app_ui <- function(request) {
   shiny::tagList(
@@ -102,7 +103,5 @@ golem_add_external_resources <- function() {
     waiter::useWaiter(),
     shinyjs::useShinyjs(),
      reactable.extras::reactable_extras_dependency()
-    # Add here other external resources
-    # for example, you can add shinyalert::useShinyalert()
   )
 }

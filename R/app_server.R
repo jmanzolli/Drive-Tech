@@ -13,10 +13,11 @@ app_server <- function(input, output, session) {
   aux <- shiny::reactiveValues(
     drive_tech_data = NULL,
     drive_tech_data_op = NULL,
-    map_tmp = sf::st_read("inst/map_gis/trocos.shx") |> sf::st_transform(crs = 4326),
-    drive_tech_manual_input_bus = NULL,
-    drive_tech_manual_input_charger = NULL,
-    drive_tech_manual_input_route = NULL,
+    map_tmp = suppressMessages({sf::st_read("inst/map_gis/trocos.shx", quiet = TRUE) |> sf::st_transform(crs = 4326)}),
+    drive_tech_manual_data = NULL,
+    drive_tech_manual_input_bus = tibble::tibble(),
+    drive_tech_manual_input_charger = tibble::tibble(),
+    drive_tech_manual_input_route = tibble::tibble(),
     drive_tech_manual_input_price = tibble::tibble(
       hour = 1:24,
       price = c(0.09619638,0.08876599,0.08449662,0.08228022,0.08080804,0.08383324,0.09252627,0.1027913,0.1057172,0.09572981,0.08299575,0.07722831,0.07437687,0.07192796,0.06861104,0.06739891,0.07101793,0.08115063,0.0941812,0.1104536,0.1221266,0.1205818,0.1114516,0.1015224)

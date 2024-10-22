@@ -33,6 +33,10 @@ def setData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max 
     i = len(T_start)
     return T_start, T_end, alpha, ch_eff, gama, Price, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i
 
+def setManualData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max = 1, E_end = 0.2):
+    print(data)
+    
+
 def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False):
 
     T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
