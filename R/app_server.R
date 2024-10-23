@@ -14,7 +14,6 @@ app_server <- function(input, output, session) {
     drive_tech_data = NULL,
     drive_tech_data_op = NULL,
     map_tmp = suppressMessages({sf::st_read("inst/map_gis/trocos.shx", quiet = TRUE) |> sf::st_transform(crs = 4326)}),
-    drive_tech_manual_data = NULL,
     drive_tech_manual_input_bus = tibble::tibble(),
     drive_tech_manual_input_charger = tibble::tibble(),
     drive_tech_manual_input_route = tibble::tibble(),
@@ -54,8 +53,11 @@ app_server <- function(input, output, session) {
       if (aux$run_gurobi == 1) {
         session$userData$w$show()
 
+        manual <- aux$drive_tech_data$type
+        manual <- manual == "manual"
+
         # log_file <<- tempfile(fileext = ".log")
-        # result <- run_gurobi(aux$drive_tech_data, log_file)
+        # result <- run_gurobi(aux$drive_tech_data, log_file, manual)
         # if (isFALSE(result)) {
         #   result <- list(
         #     ENERGY = NULL,

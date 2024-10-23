@@ -139,36 +139,47 @@ mod_drive_summary_server <- function(id, aux) {
     output$fleet_table <- shiny::renderTable({
       shiny::req(aux$drive_tech_data)
 
-      aux$drive_tech_data[[1]] |> 
-        dplyr::select(`Bus ID`, `Buses`, `Length...4`, `Bus Brand`) |> 
-          tidyr::drop_na() |> 
-          dplyr::rename(
-            "Vehicle Number" = "Bus ID", 
-            "Battery Capacity [kWh]" = "Buses",
-            "Vehicle size [m]" = "Length...4",
-            "Brand" = "Bus Brand"
-          )
-          # reactable::reactable(
-          #   defaultPageSize = 20,
-          #   columns = list(
-          #     `Bus ID` = reactable::colDef(
-          #       name = "#ID"
-          #     ),
-          #     `Buses` = reactable::colDef(
-          #       name = "Battery"
-          #     ),
-          #     `Length...4` = reactable::colDef(
-          #       name = "Length"
-          #     ),
-          #     `Bus Brand` = reactable::colDef(
-          #       name = "Brand"
-          #     )
-          #   ),
-          #   defaultColDef = reactable::colDef(
-          #     minWidth = 175,
-          #     align = "center"
-          #   )
-          # )
+      if (aux$drive_tech_data$type == "file") {
+        aux$drive_tech_data[[1]] |> 
+          dplyr::select(`Bus ID`, `Buses`, `Length...4`, `Bus Brand`) |> 
+            tidyr::drop_na() |> 
+            dplyr::rename(
+              "Vehicle Number" = "Bus ID", 
+              "Battery Capacity [kWh]" = "Buses",
+              "Vehicle size [m]" = "Length...4",
+              "Brand" = "Bus Brand"
+            )
+        # reactable::reactable(
+        #   defaultPageSize = 20,
+        #   columns = list(
+        #     `Bus ID` = reactable::colDef(
+        #       name = "#ID"
+        #     ),
+        #     `Buses` = reactable::colDef(
+        #       name = "Battery"
+        #     ),
+        #     `Length...4` = reactable::colDef(
+        #       name = "Length"
+        #     ),
+        #     `Bus Brand` = reactable::colDef(
+        #       name = "Brand"
+        #     )
+        #   ),
+        #   defaultColDef = reactable::colDef(
+        #     minWidth = 175,
+        #     align = "center"
+        #   )
+        # )
+      } else {
+          aux$drive_tech_data$drive_tech_manual_input_bus |> 
+            tidyr::drop_na() |> 
+            dplyr::rename(
+              "ID" = "bus_id",
+              "Name" = "bus_manufacturer",
+              "Capacity" = "bus_battery_capacity"
+            )
+      }
+
     }, align = "c", digits = 0, hover = TRUE)
 
     shiny::observeEvent(input$route_and_scheduling_bttn, {
@@ -271,36 +282,47 @@ mod_drive_summary_server <- function(id, aux) {
     output$charging_table <- shiny::renderTable({
       shiny::req(aux$drive_tech_data)
 
-      aux$drive_tech_data[[1]] |> 
-        dplyr::select(`Charger ID`, Charger, `Status`, `Brand`) |> 
-          tidyr::drop_na() |> 
-          dplyr::rename(
-            "Charger Number" = "Charger ID",
-            "Power [kW]" = "Charger",
-            "Type" = "Status",
-            "Brand" = "Brand"
-          )
-          # reactable::reactable(
-          #   defaultPageSize = 20,
-          #   columns = list(
-          #     `Charger ID` = reactable::colDef(
-          #       name = "#ID"
-          #     ),
-          #     `Charger` = reactable::colDef(
-          #       name = "Power"
-          #     ),
-          #     `Status` = reactable::colDef(
-          #       name = "Status"
-          #     ),
-          #     `Charger Brand` = reactable::colDef(
-          #       name = "Brand"
-          #     )
-          #   ),
-          #   defaultColDef = reactable::colDef(
-          #     minWidth = 175,
-          #     align = "center"
-          #   )
-          # )
+      if (aux$drive_tech_data$type == "file") {
+        aux$drive_tech_data[[1]] |> 
+          dplyr::select(`Charger ID`, Charger, `Status`, `Brand`) |> 
+            tidyr::drop_na() |> 
+            dplyr::rename(
+              "Charger Number" = "Charger ID",
+              "Power [kW]" = "Charger",
+              "Type" = "Status",
+              "Brand" = "Brand"
+            )
+        # reactable::reactable(
+        #   defaultPageSize = 20,
+        #   columns = list(
+        #     `Charger ID` = reactable::colDef(
+        #       name = "#ID"
+        #     ),
+        #     `Charger` = reactable::colDef(
+        #       name = "Power"
+        #     ),
+        #     `Status` = reactable::colDef(
+        #       name = "Status"
+        #     ),
+        #     `Charger Brand` = reactable::colDef(
+        #       name = "Brand"
+        #     )
+        #   ),
+        #   defaultColDef = reactable::colDef(
+        #     minWidth = 175,
+        #     align = "center"
+        #   )
+        # )
+      } else {
+         aux$drive_tech_data$drive_tech_manual_input_charger |> 
+            tidyr::drop_na() |> 
+            dplyr::rename(
+              "ID" = "charger_id",
+              "Name" = "charger_manufacturer",
+              "Power" = "charger_power"
+            )
+      }
+
     }, align = "c", digits = 0, hover = TRUE)
 
     shiny::observeEvent(input$energy_and_tariffs_bttn, {
@@ -322,43 +344,62 @@ mod_drive_summary_server <- function(id, aux) {
     })
     output$energy_plot1 <- echarts4r::renderEcharts4r({
       shiny::req(aux$drive_tech_data)
-
+      
       start_time <- as.POSIXct("2024-06-23 00:00:00")
       end_time <- as.POSIXct("2024-06-23 23:45:00")
       time_sequence <- seq(from = start_time, to = end_time, by = "15 min")
 
-      aux$drive_tech_data[[1]] |> 
-        dplyr::select(`Energy price`) |> 
-        tidyr::drop_na() |> 
-        dplyr::mutate(
-          index = time_sequence
-        ) |> 
-        echarts4r::e_chart(index) |> 
-        echarts4r::e_line(`Energy price`, legend = FALSE) |> 
-        echarts4r::e_x_axis(name = "Time[Hour]", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
-        echarts4r::e_y_axis(name = "CAD$/kWh", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 50) |> 
-        echarts4r::e_tooltip(trigger = "axis") |> 
-        echarts4r::e_theme("dark-bold") 
+      if (aux$drive_tech_data$type == "file") {
+        aux$drive_tech_data[[1]] |> 
+          dplyr::select(`Energy price`) |> 
+          tidyr::drop_na() |> 
+          dplyr::mutate(
+            index = time_sequence
+          ) |> 
+          echarts4r::e_chart(index) |> 
+          echarts4r::e_line(`Energy price`, legend = FALSE) |> 
+          echarts4r::e_x_axis(name = "Time[Hour]", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
+          echarts4r::e_y_axis(name = "CAD$/kWh", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 50) |> 
+          echarts4r::e_tooltip(trigger = "axis") |> 
+          echarts4r::e_theme("dark-bold") 
+      } else {
+        # print(aux$drive_tech_data[["drive_tech_manual_input_price"]])
+        tibble::tibble(price = rep(aux$drive_tech_data$drive_tech_manual_input_price$price, each=4)) |> 
+          tidyr::drop_na() |> 
+          dplyr::mutate(
+            index = time_sequence
+          ) |> 
+          echarts4r::e_chart(index) |> 
+          echarts4r::e_line(price, legend = FALSE) |> 
+          echarts4r::e_x_axis(name = "Time[Hour]", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
+          echarts4r::e_y_axis(name = "CAD$/kWh", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 50) |> 
+          echarts4r::e_tooltip(trigger = "axis") |> 
+          echarts4r::e_theme("dark-bold") 
+      }
     })
 
     output$energy_plot2 <- echarts4r::renderEcharts4r({
       shiny::req(aux$drive_tech_data)
 
-      aux$drive_tech_data[[1]] |> 
-        dplyr::select(`Peak power`, `Power price`) |> 
-        tidyr::drop_na() |> 
-        echarts4r::e_chart(`Peak power`) |> 
-        echarts4r::e_bar(`Power price`, legend = FALSE) |> 
-        echarts4r::e_x_axis(
-          name = "kW", 
-          nameLocation = "middle", 
-          nameTextStyle = list(fontSize = 16), 
-          nameGap = 30,
-          min = 0, max = 500, interval = 50
-        ) |> 
-        echarts4r::e_y_axis(name = "CAD$/kW", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
-        echarts4r::e_tooltip() |> 
-        echarts4r::e_theme("dark-bold")
+      if (aux$drive_tech_data$type == "file") {
+        aux$drive_tech_data[[1]] |> 
+          dplyr::select(`Peak power`, `Power price`) |> 
+          tidyr::drop_na() |> 
+          echarts4r::e_chart(`Peak power`) |> 
+          echarts4r::e_bar(`Power price`, legend = FALSE) |> 
+          echarts4r::e_x_axis(
+            name = "kW", 
+            nameLocation = "middle", 
+            nameTextStyle = list(fontSize = 16), 
+            nameGap = 30,
+            min = 0, max = 500, interval = 50
+          ) |> 
+          echarts4r::e_y_axis(name = "CAD$/kW", nameLocation = "middle", nameTextStyle = list(fontSize = 16), nameGap = 30) |> 
+          echarts4r::e_tooltip() |> 
+          echarts4r::e_theme("dark-bold")
+      } else {
+
+      }
     })
   })
 }

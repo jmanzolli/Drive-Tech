@@ -33,13 +33,61 @@ def setData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max 
     i = len(T_start)
     return T_start, T_end, alpha, ch_eff, gama, Price, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i
 
-def setManualData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max = 1, E_end = 0.2):
-    print(data)
+def time_to_pct(time_str):
+    hours, minutes = map(int, time_str.split(":"))
+    time_decimal = (hours + minutes / 60)/24
+    return(time_decimal)
+
+def setManualData(
+        data,
+        d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, 
+        E_min = 0.2, E_max = 1, E_end = 0.2
+    ):
+
+    energy_consumption=data["energy_consumption"]
+    avg_velocity=data["avg_velocity"]
+    input_bus=data["input_bus"]
+    input_charger=data["input_charger"]
+    input_route=data["input_route"]
+    input_price=data["input_price"]
+    
+    # power = 100
+    timestamp = 4
+
+    T_start = input_route["route_start"].tolist()
+    T_start = [x for x in T_start if str(x) != 'nan']
+    T_start = [int(x) * timestamp * 24 for x in T_start]
+
+    T_end = input_route["route_end"].tolist()
+    T_end = [x for x in T_end if str(x) != 'nan']
+    T_end = [int(x) * timestamp * 24 for x in T_end]
+
+
+    alpha = input_charger["charger_power"].tolist()
+    alpha = [x for x in alpha if str(x) != 'nan']
+
+    gama = (avg_velocity * energy_consumption) / timestamp
+
+    Price = input_price["price"].tolist()
+
+    C_bat = input_bus['bus_battery_capacity'].tolist()
+    C_bat = [x for x in C_bat if str(x) != 'nan']
+
+    t = len(Price)
+    k = len(C_bat)
+    n = len(alpha)
+    T = len(Price)
+    i = len(T_start)
+
+    return T_start, T_end, alpha, ch_eff, gama, Price, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i    
     
 
-def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False):
+def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False, manual=False):
 
-    T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
+    if manual:
+        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
+    else:
+        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setManualData(data)
     
     model = pyo.ConcreteModel()
     

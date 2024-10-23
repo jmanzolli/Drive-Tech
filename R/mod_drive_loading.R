@@ -70,6 +70,7 @@ mod_drive_loading_server <- function(id, aux) {
       })
 
       names(data) <- sheets
+      data$type <- "file"
 
       Sys.sleep(1.75)
 
@@ -80,6 +81,7 @@ mod_drive_loading_server <- function(id, aux) {
       
       aux$drive_tech_data <- data
       aux$run_gurobi <- 1
+      shinyalert::shinyalert("File uploaded, move to the next tab > Summary", type = "success")
     })
 
     #!
@@ -135,6 +137,7 @@ mod_drive_loading_server <- function(id, aux) {
         )
       } else {
         final_payload <- list(
+          type = "manual",
           energy_consumption = input$energy_consumption,
           avg_velocity = input$avg_velocity,
           start_energy = input$start_energy,
@@ -146,7 +149,14 @@ mod_drive_loading_server <- function(id, aux) {
 
         message(jsonlite::toJSON(final_payload, pretty = TRUE))
 
-        aux$drive_tech_manual_data <- final_payload
+        # saveRDS(final_payload, "tmp.rds")
+
+        aux$drive_tech_data <- final_payload
+        aux$run_gurobi <- 1
+
+        shinyalert::shinyalert("Manual data inserted, move to the next tab > Summary", type = "success")
+
+        shiny::removeModal()
       }
     }) |> 
       shiny::bindEvent(input$submit)
