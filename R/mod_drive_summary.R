@@ -176,7 +176,7 @@ mod_drive_summary_server <- function(id, aux) {
             dplyr::rename(
               "ID" = "bus_id",
               "Name" = "bus_manufacturer",
-              "Capacity" = "bus_battery_capacity"
+              "Battery Capacity [kWh]" = "bus_battery_capacity"
             )
       }
 
@@ -319,7 +319,7 @@ mod_drive_summary_server <- function(id, aux) {
             dplyr::rename(
               "ID" = "charger_id",
               "Name" = "charger_manufacturer",
-              "Power" = "charger_power"
+              "Power [kW]" = "charger_power"
             )
       }
 
