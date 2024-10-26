@@ -10,20 +10,34 @@
 mod_drive_loading_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::div(
-      id = ns("layout"),
-      style = "padding-top: 31px",
-      # class = "centered-container-init",
-      shiny::column(
-        12,
-        align = "center",
-        shiny::fileInput(
-          inputId = ns("file"),
-          label = "Data for optimization (.xlsx file)",
-          multiple = FALSE,
-          accept = ".xlsx",
-          width = "400px"
+    shiny::column(
+      12, align = "center",
+      col_6(
+        align = "right",
+        shiny::span(
+          "Gurobi Optimizator",
+           bslib::tooltip(
+            bsicons::bs_icon("info-circle"),
+            "When deactivated it runs the demo version.",
+            placement = "bottom"
+          )
+        ),
+        shinyWidgets::prettyToggle(
+          inputId = ns("status_gurobi"),
+          label_on = "Active",
+          label_off = "Deactivated"
         )
+      )
+    ),
+    shiny::column(
+      12,
+      align = "center",
+      shiny::fileInput(
+        inputId = ns("file"),
+        label = "Data for optimization (.xlsx file)",
+        multiple = FALSE,
+        accept = ".xlsx",
+        width = "400px"
       )
     ),
     col_12(
@@ -49,6 +63,11 @@ mod_drive_loading_ui <- function(id) {
 mod_drive_loading_server <- function(id, aux) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    shiny::observe({
+      aux$status_gurobi <- input$status_gurobi
+    }) |> 
+      shiny::bindEvent(input$status_gurobi)
 
     shiny::observeEvent(input$file, {
       file <- input$file
@@ -78,15 +97,15 @@ mod_drive_loading_server <- function(id, aux) {
 
       # shinyjs::runjs('$("#loading-layout").removeClass("centered-container-init");')
       # shinyjs::runjs('$("#loading-layout").addClass("centered-container");')
-      
+
       aux$drive_tech_data <- data
       aux$run_gurobi <- 1
       shinyalert::shinyalert("File uploaded, move to the next tab > Summary", type = "success")
     })
 
-    #!
-    #!   VALIDATION
-    #!
+    # !
+    # !   VALIDATION
+    # !
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule(
       "energy_consumption",
@@ -111,9 +130,9 @@ mod_drive_loading_server <- function(id, aux) {
     )
     iv$enable()
 
-    #!
-    #!   EXTRA MODULES - CRUDS
-    #!    
+    # !
+    # !   EXTRA MODULES - CRUDS
+    # !
     mod_drive_loading_bus_server("bus_table", aux)
     mod_drive_loading_charge_server("charger_table", aux)
     mod_drive_loading_route_server("route_table", aux)
@@ -158,7 +177,7 @@ mod_drive_loading_server <- function(id, aux) {
 
         shiny::removeModal()
       }
-    }) |> 
+    }) |>
       shiny::bindEvent(input$submit)
 
     shiny::observe({
@@ -203,7 +222,7 @@ mod_drive_loading_server <- function(id, aux) {
             )
           ),
           bslib::layout_column_wrap(
-            width = 1/2,
+            width = 1 / 2,
             heights_equal = "row",
             mod_drive_loading_bus_ui(ns("bus_table")),
             mod_drive_loading_charge_ui(ns("charger_table")),
@@ -211,7 +230,7 @@ mod_drive_loading_server <- function(id, aux) {
             mod_drive_loading_price_ui(ns("price_table"))
           )
         ),
-        easyClose = TRUE, 
+        easyClose = TRUE,
         footer = tagList(
           shiny::modalButton("Close"),
           shiny::actionButton(
@@ -221,7 +240,7 @@ mod_drive_loading_server <- function(id, aux) {
           )
         )
       ))
-    }) |> 
+    }) |>
       shiny::bindEvent(input$manual_input)
   })
 }

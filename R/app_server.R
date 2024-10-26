@@ -11,6 +11,8 @@ app_server <- function(input, output, session) {
   )
 
   aux <- shiny::reactiveValues(
+    status_gurobi = 0,
+    run_gurobi = 0,
     drive_tech_data = NULL,
     drive_tech_data_op = NULL,
     map_tmp = suppressMessages({sf::st_read("inst/map_gis/trocos.shx", quiet = TRUE) |> sf::st_transform(crs = 4326)}),
@@ -56,26 +58,29 @@ app_server <- function(input, output, session) {
         manual <- aux$drive_tech_data$type
         manual <- manual == "manual"
 
-        # log_file <<- tempfile(fileext = ".log")
-        # result <- run_gurobi(aux$drive_tech_data, log_file, manual)
-        # if (isFALSE(result)) {
-        #   result <- list(
-        #     ENERGY = NULL,
-        #     SOC = NULL,
-        #     POWER = NULL,
-        #     CHARGERS_ENABLED = NULL,
-        #     CHARGERS_ASSIGNED = NULL,
-        #     OPTIMAL = NULL,
-        #     ANALYTICS = NULL
-        #   )
-        # }
-        # if (file.exists(log_file)) {
-        #   result$log <- paste0(readLines(log_file), collapse = "\n")
-        # } else {
-        #   result$log <- NULL
-        # }
-        # saveRDS(result, "result.rds")
-        result <- readRDS("result.rds")
+        if (aux$status_gurobi == 1) {
+          log_file <<- tempfile(fileext = ".log")
+          result <- run_gurobi(aux$drive_tech_data, log_file, manual)
+          if (isFALSE(result)) {
+            result <- list(
+              ENERGY = NULL,
+              SOC = NULL,
+              POWER = NULL,
+              CHARGERS_ENABLED = NULL,
+              CHARGERS_ASSIGNED = NULL,
+              OPTIMAL = NULL,
+              ANALYTICS = NULL
+            )
+          }
+          if (file.exists(log_file)) {
+            result$log <- paste0(readLines(log_file), collapse = "\n")
+          } else {
+            result$log <- NULL
+          }
+          # saveRDS(result, "inst/data/drive_tech/v2/demo.rds")
+        } else {
+          result <- readRDS("inst/data/drive_tech/v2/demo.rds")
+        }
 
         if (!is.null(result$CHARGERS_ASSIGNED)) {
           result$CHARGERS_ASSIGNED <- result$CHARGERS_ASSIGNED |>

@@ -83,11 +83,10 @@ def setManualData(
     
 
 def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False, manual=False):
-
     if manual:
-        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
-    else:
         T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setManualData(data)
+    else:
+        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
     
     model = pyo.ConcreteModel()
     
