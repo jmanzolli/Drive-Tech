@@ -1,3 +1,6 @@
+#!
+#!   RUN GUROBI FROM EXCEL FILE
+#!
 devtools::load_all()
 
 reticulate::source_python("./inst/python/run_gurobi.py", envir = .GlobalEnv)
@@ -17,6 +20,11 @@ manual <- aux$drive_tech_data$type
 manual <- manual == "manual"
 
 log_file <- tempfile(fileext = ".log")
+
+ls()
+setData(aux$drive_tech_data)
+
+
 result <- run_gurobi(aux$drive_tech_data, log_file, manual)
 result$CHARGERS_ASSIGNED <- result$CHARGERS_ASSIGNED |>
     dplyr::mutate(
@@ -32,3 +40,28 @@ result$log <- paste0(readLines(log_file), collapse = "\n")
 aux$drive_tech_data_op <- result
 
 saveRDS(result, "result.rds")
+
+#!
+#!   RUN GUROBI MANUALLY
+#!
+devtools::load_all()
+reticulate::source_python("./inst/python/run_gurobi.py", envir = .GlobalEnv)
+reticulate::source_python("./inst/python/functions.py", envir = .GlobalEnv)
+data <- jsonlite::fromJSON("./inst/data/drive_tech/v2/manual_input.json")
+aux <- list()
+aux$drive_tech_data <- data
+aux$drive_tech_data$type <- "manual"
+manual <- aux$drive_tech_data$type
+manual <- manual == "manual"
+
+log_file <- tempfile(fileext = ".log")
+
+ls()
+setManualData(aux$drive_tech_data)
+
+result <- run_gurobi(aux$drive_tech_data, log_file, manual)
+result$CHARGERS_ASSIGNED <- result$CHARGERS_ASSIGNED |>
+    dplyr::mutate(
+        Time = lubridate::hm(Time),
+        Time = lubridate::hour(Time) + (lubridate::minute(Time) / 60)
+    )

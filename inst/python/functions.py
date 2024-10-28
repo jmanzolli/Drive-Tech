@@ -43,24 +43,27 @@ def setManualData(
         d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, 
         E_min = 0.2, E_max = 1, E_end = 0.2
     ):
-
+    
+    # import json
+    # with open('./inst/data/drive_tech/v2/manual_input.json') as file:
+    #     data = json.load(file)
     energy_consumption=data["energy_consumption"]
     avg_velocity=data["avg_velocity"]
-    input_bus=data["input_bus"]
-    input_charger=data["input_charger"]
-    input_route=data["input_route"]
-    input_price=data["input_price"]
+    input_bus=data["drive_tech_manual_input_bus"]
+    input_charger=data["drive_tech_manual_input_charger"]
+    input_route=data["drive_tech_manual_input_route"]
+    input_price=data["drive_tech_manual_input_price"]
     
     # power = 100
     timestamp = 4
 
     T_start = input_route["route_start"].tolist()
     T_start = [x for x in T_start if str(x) != 'nan']
-    T_start = [int(x) * timestamp * 24 for x in T_start]
+    T_start = [int(time_to_pct(x) * timestamp * 24) for x in T_start]
 
     T_end = input_route["route_end"].tolist()
     T_end = [x for x in T_end if str(x) != 'nan']
-    T_end = [int(x) * timestamp * 24 for x in T_end]
+    T_end = [int(time_to_pct(x) * timestamp * 24) for x in T_end]
 
 
     alpha = input_charger["charger_power"].tolist()
@@ -69,6 +72,7 @@ def setManualData(
     gama = (avg_velocity * energy_consumption) / timestamp
 
     Price = input_price["price"].tolist()
+    Price = np.repeat(Price, timestamp)
 
     C_bat = input_bus['bus_battery_capacity'].tolist()
     C_bat = [x for x in C_bat if str(x) != 'nan']
