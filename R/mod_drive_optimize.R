@@ -233,13 +233,18 @@ mod_drive_optimize_server <- function(id, aux) {
       # start_time <- as.POSIXct("2024-06-23 00:00:00")
       # end_time <- as.POSIXct("2024-06-23 23:45:00")
       # time_sequence <- seq(from = start_time, to = end_time, by = "15 min")
+      if (aux$drive_tech_data$type == "manual") {
+        energy_price <- rep(aux$drive_tech_data$drive_tech_manual_input_price$price, each=4)
+      } else {
+        energy_price <- aux$drive_tech_data[[1]] |> dplyr::pull(`Energy price`)
+      }
 
       aux$drive_tech_data_op$POWER |>
         dplyr::mutate(
           time = seq(0.25, 24, by = .25),
         ) |>
         tibble::tibble(
-          Energy = aux$drive_tech_data$Dataset[["Energy price"]]
+          Energy = !!energy_price
         ) |>
         # tidyr::gather(variable, value, -time) |>
         # dplyr::group_by(variable) |>
