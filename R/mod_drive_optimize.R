@@ -254,7 +254,7 @@ mod_drive_optimize_server <- function(id, aux) {
         echarts4r::e_theme("dark-bold") |>
         echarts4r::e_x_axis(name = "Time", min = 0, max = 24, interval = 1) |>
         echarts4r::e_y_axis(name = "Power (kWh)") |>
-        echarts4r::e_y_axis(name = "Energy Price (€/kWh)", index = 1) |>
+        echarts4r::e_y_axis(name = "Energy Price (Currency/kWh)", index = 1) |>
         echarts4r::e_title("POWER OVER TIME AND ENERGY OVER TIME", left = "center") |>
         echarts4r::e_legend(
           orient = "horizontal",
@@ -267,6 +267,8 @@ mod_drive_optimize_server <- function(id, aux) {
     })
     output$results_plot3 <- echarts4r::renderEcharts4r({
       shiny::req(aux$drive_tech_data_op)
+
+      max_bus <- max(aux$drive_tech_data_op$CHARGERS_ASSIGNED$Bus)
 
       aux$drive_tech_data_op$CHARGERS_ASSIGNED |>
         tidyr::drop_na() |>
@@ -281,7 +283,7 @@ mod_drive_optimize_server <- function(id, aux) {
         echarts4r::e_line(value, lineStyle = list(width = 20)) |> 
         echarts4r::e_theme("dark-bold") |>
         echarts4r::e_flip_coords() |> 
-        echarts4r::e_y_axis(name = "Bus ID", min = 0, max = 20, interval = 1) |>
+        echarts4r::e_y_axis(name = "Bus ID", min = 0, max = max_bus, interval = 1) |>
         echarts4r::e_x_axis(name = "Time [Hours]", min = 0, max = 24, interval = 1) |> 
         echarts4r::e_title("Charger assigned per Bus", left = "center") |>
         echarts4r::e_legend(
@@ -313,7 +315,7 @@ mod_drive_optimize_server <- function(id, aux) {
           width = 1/2,
           bslib::value_box(
             title = "Optimal value",
-            value = euro(aux$drive_tech_data_op$OPTIMAL[[1]]),
+            value = num(aux$drive_tech_data_op$OPTIMAL[[1]]),
             showcase = bsicons::bs_icon("currency-euro"),
             theme = "primary",
             shiny::p("Charging costs")
