@@ -1,9 +1,8 @@
 Package: driveTech
 Title: Drive Tech
-Version: 1.0.0
-Authors@R: 
-    person("Cesar", "Quintero", , "cesard1117@gmail.com", role = c("cre", "aut"))
-Description: Emissions Simulator and Bus Transit App.
+Version: 0.0.0.9000
+Authors@R: person('Cesar', 'Quintero', email = 'cesard1117@gmail.com', role = c('cre', 'aut'))
+Description: App for optimization
 License: file LICENSE
 Imports: 
     bsicons (>= 0.1.2),
