@@ -31,4 +31,5 @@ restore.R
 renv/
 dev/
 .gitignore
-renv.lock
+renv.lock^\.dockerignore$
+^deploy/Dockerfile$

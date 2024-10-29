@@ -1,0 +1,379 @@
+{
+  "energy_consumption": 0.9,
+  "avg_velocity": 12,
+  "start_energy": 12,
+  "drive_tech_manual_input_bus": [
+    {
+      "bus_id": 1,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 2,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 3,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 4,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 5,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 6,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 7,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 8,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 9,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 10,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 11,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 12,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 13,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 14,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 15,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 16,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 17,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 18,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 19,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    },
+    {
+      "bus_id": 20,
+      "bus_manufacturer": "bus name",
+      "bus_battery_capacity": 200
+    }
+  ],
+  "drive_tech_manual_input_charger": [
+    {
+      "charger_id": 1,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 2,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 3,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 4,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 5,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 6,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 7,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 8,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 9,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    },
+    {
+      "charger_id": 10,
+      "charger_manufacturer": "charger name",
+      "charger_power": 25
+    }
+  ],
+  "drive_tech_manual_input_route": [
+    {
+      "route_id": 1,
+      "route_name": "route",
+      "route_start": "06:00",
+      "route_end": "18:00"
+    },
+    {
+      "route_id": 2,
+      "route_name": "route",
+      "route_start": "06:15",
+      "route_end": "19:00"
+    },
+    {
+      "route_id": 3,
+      "route_name": "route",
+      "route_start": "06:30",
+      "route_end": "18:30"
+    },
+    {
+      "route_id": 4,
+      "route_name": "route",
+      "route_start": "06:45",
+      "route_end": "19:45"
+    },
+    {
+      "route_id": 5,
+      "route_name": "route",
+      "route_start": "07:00",
+      "route_end": "20:15"
+    },
+    {
+      "route_id": 6,
+      "route_name": "route",
+      "route_start": "07:15",
+      "route_end": "19:30"
+    },
+    {
+      "route_id": 7,
+      "route_name": "route",
+      "route_start": "07:30",
+      "route_end": "20:00"
+    },
+    {
+      "route_id": 8,
+      "route_name": "route",
+      "route_start": "07:45",
+      "route_end": "19:30"
+    },
+    {
+      "route_id": 9,
+      "route_name": "route",
+      "route_start": "08:00",
+      "route_end": "21:00"
+    },
+    {
+      "route_id": 10,
+      "route_name": "route",
+      "route_start": "06:00",
+      "route_end": "18:00"
+    },
+    {
+      "route_id": 11,
+      "route_name": "route",
+      "route_start": "06:15",
+      "route_end": "19:00"
+    },
+    {
+      "route_id": 12,
+      "route_name": "route",
+      "route_start": "06:30",
+      "route_end": "18:30"
+    },
+    {
+      "route_id": 13,
+      "route_name": "route",
+      "route_start": "06:45",
+      "route_end": "19:45"
+    },
+    {
+      "route_id": 14,
+      "route_name": "route",
+      "route_start": "07:00",
+      "route_end": "20:15"
+    },
+    {
+      "route_id": 15,
+      "route_name": "route",
+      "route_start": "07:15",
+      "route_end": "19:30"
+    },
+    {
+      "route_id": 16,
+      "route_name": "route",
+      "route_start": "07:30",
+      "route_end": "20:00"
+    },
+    {
+      "route_id": 17,
+      "route_name": "route",
+      "route_start": "07:45",
+      "route_end": "19:30"
+    },
+    {
+      "route_id": 18,
+      "route_name": "route",
+      "route_start": "08:00",
+      "route_end": "21:00"
+    },
+    {
+      "route_id": 19,
+      "route_name": "route",
+      "route_start": "05:00",
+      "route_end": "18:00"
+    },
+    {
+      "route_id": 20,
+      "route_name": "route",
+      "route_start": "10:15",
+      "route_end": "23:00"
+    }
+  ],
+  "drive_tech_manual_input_price": [
+    {
+      "hour": 1,
+      "price": 0.0962
+    },
+    {
+      "hour": 2,
+      "price": 0.0888
+    },
+    {
+      "hour": 3,
+      "price": 0.0845
+    },
+    {
+      "hour": 4,
+      "price": 0.0823
+    },
+    {
+      "hour": 5,
+      "price": 0.0808
+    },
+    {
+      "hour": 6,
+      "price": 0.0838
+    },
+    {
+      "hour": 7,
+      "price": 0.0925
+    },
+    {
+      "hour": 8,
+      "price": 0.1028
+    },
+    {
+      "hour": 9,
+      "price": 0.1057
+    },
+    {
+      "hour": 10,
+      "price": 0.0957
+    },
+    {
+      "hour": 11,
+      "price": 0.083
+    },
+    {
+      "hour": 12,
+      "price": 0.0772
+    },
+    {
+      "hour": 13,
+      "price": 0.0744
+    },
+    {
+      "hour": 14,
+      "price": 0.0719
+    },
+    {
+      "hour": 15,
+      "price": 0.0686
+    },
+    {
+      "hour": 16,
+      "price": 0.0674
+    },
+    {
+      "hour": 17,
+      "price": 0.071
+    },
+    {
+      "hour": 18,
+      "price": 0.0812
+    },
+    {
+      "hour": 19,
+      "price": 0.0942
+    },
+    {
+      "hour": 20,
+      "price": 0.1105
+    },
+    {
+      "hour": 21,
+      "price": 0.1221
+    },
+    {
+      "hour": 22,
+      "price": 0.1206
+    },
+    {
+      "hour": 23,
+      "price": 0.1115
+    },
+    {
+      "hour": 24,
+      "price": 0.1015
+    }
+  ]
+}

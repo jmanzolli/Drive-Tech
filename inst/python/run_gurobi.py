@@ -1,6 +1,6 @@
 from inst.python.functions import *
 
-def run_gurobi(data, log_file=None):
+def run_gurobi(data, log_file=None, manual=False):
     try:
         # data = read_file("./inst/data/v2/input.xlsx")
         model = setModel(
@@ -10,6 +10,7 @@ def run_gurobi(data, log_file=None):
             solver="gurobi",
             log_file=log_file,
             status=True,
+            manual=manual
         )
 
         output = result(model)

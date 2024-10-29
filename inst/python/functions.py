@@ -33,9 +33,64 @@ def setData(data, d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, E_min = 0.2, E_max 
     i = len(T_start)
     return T_start, T_end, alpha, ch_eff, gama, Price, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i
 
-def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False):
+def time_to_pct(time_str):
+    hours, minutes = map(int, time_str.split(":"))
+    time_decimal = (hours + minutes / 60)/24
+    return(time_decimal)
 
-    T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
+def setManualData(
+        data,
+        d_off=4, d_on=6, ch_eff = 0.90, E_0 = 0.2, 
+        E_min = 0.2, E_max = 1, E_end = 0.2
+    ):
+    
+    # import json
+    # with open('./inst/data/drive_tech/v2/manual_input.json') as file:
+    #     data = json.load(file)
+    energy_consumption=data["energy_consumption"]
+    avg_velocity=data["avg_velocity"]
+    input_bus=data["drive_tech_manual_input_bus"]
+    input_charger=data["drive_tech_manual_input_charger"]
+    input_route=data["drive_tech_manual_input_route"]
+    input_price=data["drive_tech_manual_input_price"]
+    
+    # power = 100
+    timestamp = 4
+
+    T_start = input_route["route_start"].tolist()
+    T_start = [x for x in T_start if str(x) != 'nan']
+    T_start = [int(time_to_pct(x) * timestamp * 24) for x in T_start]
+
+    T_end = input_route["route_end"].tolist()
+    T_end = [x for x in T_end if str(x) != 'nan']
+    T_end = [int(time_to_pct(x) * timestamp * 24) for x in T_end]
+
+
+    alpha = input_charger["charger_power"].tolist()
+    alpha = [x for x in alpha if str(x) != 'nan']
+
+    gama = (avg_velocity * energy_consumption) / timestamp
+
+    Price = input_price["price"].tolist()
+    Price = np.repeat(Price, timestamp)
+
+    C_bat = input_bus['bus_battery_capacity'].tolist()
+    C_bat = [x for x in C_bat if str(x) != 'nan']
+
+    t = len(Price)
+    k = len(C_bat)
+    n = len(alpha)
+    T = len(Price)
+    i = len(T_start)
+
+    return T_start, T_end, alpha, ch_eff, gama, Price, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i    
+    
+
+def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, status=False, manual=False):
+    if manual:
+        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setManualData(data)
+    else:
+        T_start, T_end, alpha, ch_eff, gama, P, E_0, E_min, E_max, E_end, C_bat, d_off, d_on, t, k, n, T, i = setData(data)
     
     model = pyo.ConcreteModel()
     
