@@ -172,10 +172,6 @@ def power(T,w):
     W = pd.DataFrame(transac_list, index=T, columns=['Power'])
     return W
 
-import numpy as np
-import pandas as pd
-import pyomo.environ as pyo
-
 def charger(N, T, K, x):
     # Initial value extraction from model
     value = []

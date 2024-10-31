@@ -66,7 +66,7 @@ def setManualData(
 
 
     alpha = input_charger["charger_power"].tolist()
-    alpha = [x for x in alpha if str(x) != 'nan']
+    alpha = [x / timestamp for x in alpha if not pd.isna(x)]
 
     gama = (avg_velocity * energy_consumption) / timestamp
 
@@ -164,22 +164,22 @@ def setModel(data,time_limit=60,mipgap=0.01,solver='gurobi',log_file=None, statu
     for k in model.K:
         for n in model.N:
             for t in range(2,T-d_off):
-                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1]  + ((1/d_off)*sum(model.x[k,n,j] for j in range(t,t+d_off))) <= 2) # 33
+                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1]  + ((1/d_off)*sum(model.x[k,n,j] for j in range(t,t+d_off))) <= 2)
     #constraint 8
     for k in model.K:
         for n in model.N:
             for t in range(T-d_off+1,T):
-                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/(T-t+1))*sum(model.x[k,n,j] for j in range(t,T))) <= 2) # 35
+                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/(T-t+1))*sum(model.x[k,n,j] for j in range(t,T))) <= 2) 
     #constraint 9
     for k in model.K:
         for n in model.N:
             for t in range(2,T-d_on):
-                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/d_on)*sum(model.x[k,n,j] for j in range(t,t+d_on))) >= 1) # 34
+                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/d_on)*sum(model.x[k,n,j] for j in range(t,t+d_on))) >= 1) 
     #constraint 10
     for k in model.K:
         for n in model.N:
             for t in range(T-d_on+1,T):
-                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/(T-t+1))*sum(model.x[k,n,j] for j in range(t,T))) >= 1) # 36
+                model.constraints.add(1 - model.x[k,n,t] + model.x[k,n,t-1] + ((1/(T-t+1))*sum(model.x[k,n,j] for j in range(t,T))) >= 1) 
     #constraint 11
     for k in model.K:
         for t in model.T:
