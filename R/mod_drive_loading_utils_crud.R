@@ -8,7 +8,7 @@ mod_drive_loading_bus_ui <- function(id) {
         align = "center",
         class = "border-style",
         bslib::layout_column_wrap(
-            width = 1 / 2,
+            width = 1 / 5,
             shiny::textInput(
                 inputId = ns("bus_manufacturer"),
                 label = "Bus Manufacturer",
@@ -22,12 +22,38 @@ mod_drive_loading_bus_ui <- function(id) {
                 decimalPlaces = 2,
                 currencySymbolPlacement = "s",
                 currencySymbol = " kWh"
+            ),
+            shiny::textInput(
+                inputId = ns("route_name"),
+                label = "Route ID",
+                value = "route"
+            ),
+            shinyWidgets::timeInput(
+                inputId = ns("route_start"),
+                label = "Start HH:MM",
+                value = "09:30"
+            ),
+            shinyWidgets::timeInput(
+                inputId = ns("route_end"),
+                label = "End HH:MM",
+                value = "18:30"
             )
         ),
-        shiny::actionButton(
-            inputId = ns("add"),
-            class = "btn btn-primary",
-            label = "Add"
+        bslib::layout_column_wrap(
+            class = "d-flex justify-content-center",
+            width = "150px",
+            fill = FALSE,
+            fillable = FALSE,
+            shiny::actionButton(
+                inputId = ns("add"),
+                class = "btn btn-primary",
+                label = "Add"
+            ),
+            shiny::actionButton(
+                inputId = ns("rmv"),
+                class = "btn btn-danger",
+                label = "Remove"
+            )
         ),
         shiny::br(),
         shiny::br(),
@@ -54,6 +80,24 @@ mod_drive_loading_bus_server <- function(id, aux) {
                 shinyvalidate::sv_gte(0)
             )
         )
+        iv$add_rule(
+            "route_name",
+            shinyvalidate::compose_rules(
+                shinyvalidate::sv_required()
+            )
+        )
+        iv$add_rule(
+            "route_start",
+            shinyvalidate::compose_rules(
+                shinyvalidate::sv_required()
+            )
+        )
+        iv$add_rule(
+            "route_end",
+            shinyvalidate::compose_rules(
+                shinyvalidate::sv_required()
+            )
+        )
         iv$enable()
 
         shiny::observe({
@@ -71,6 +115,9 @@ mod_drive_loading_bus_server <- function(id, aux) {
                 bus_id = nrow(data) + 1,
                 bus_manufacturer = input$bus_manufacturer,
                 bus_battery_capacity = input$bus_battery_capacity,
+                route_name = input$route_name,
+                route_start = input$route_start,
+                route_end = input$route_end
             )
 
             data <- dplyr::bind_rows(data, new_data)
@@ -81,6 +128,15 @@ mod_drive_loading_bus_server <- function(id, aux) {
             # shinyWidgets::updateAutonumericInput(session, "bus_battery_capacity", value = 0)
         }) |>
             shiny::bindEvent(input$add, ignoreInit = TRUE)
+        
+        shiny::observe({
+            data <- aux$drive_tech_manual_input_bus
+
+            data <- data[-nrow(data), ]
+
+            aux$drive_tech_manual_input_bus <- data
+        }) |>
+            shiny::bindEvent(input$rmv, ignoreInit = TRUE)
 
 
         output$table <- reactable::renderReactable({
@@ -120,13 +176,26 @@ mod_drive_loading_charge_ui <- function(id) {
                 align = "center",
                 decimalPlaces = 2,
                 currencySymbolPlacement = "s",
-                currencySymbol = " kWh"
+                currencySymbol = " kW"
             )
         ),
-        shiny::actionButton(
-            inputId = ns("add"),
-            class = "btn btn-primary",
-            label = "Add"
+        bslib::layout_column_wrap(
+            class = "d-flex justify-content-center",
+            width = "150px",
+            fill = FALSE,
+            fillable = FALSE,
+            shiny::actionButton(
+                inputId = ns("add"),
+                class = "btn btn-primary",
+                label = "Add",
+                width = "150px"
+            ),
+            shiny::actionButton(
+                inputId = ns("rmv"),
+                class = "btn btn-danger",
+                label = "Remove",
+                width = "150px"
+            )
         ),
         shiny::br(),
         shiny::br(),
@@ -154,7 +223,7 @@ mod_drive_loading_charge_server <- function(id, aux) {
             )
         )
         iv$enable()
-        
+
         shiny::observe({
             if (iv$is_valid()) {
                 shinyjs::enable("add")
@@ -181,6 +250,15 @@ mod_drive_loading_charge_server <- function(id, aux) {
         }) |>
             shiny::bindEvent(input$add, ignoreInit = TRUE)
 
+        shiny::observe({
+            data <- aux$drive_tech_manual_input_charger
+
+            data <- data[-nrow(data), ]
+
+            aux$drive_tech_manual_input_charger <- data
+        }) |>
+            shiny::bindEvent(input$rmv, ignoreInit = TRUE)
+
 
         output$table <- reactable::renderReactable({
             shiny::req(aux$drive_tech_manual_input_charger)
@@ -197,117 +275,8 @@ mod_drive_loading_charge_server <- function(id, aux) {
     })
 }
 
+# !   PRICEE
 # !
-# !   SCHEDULE INPUT
-# !
-mod_drive_loading_route_ui <- function(id) {
-    ns <- shiny::NS(id)
-    col_12(
-        align = "center",
-        class = "border-style",
-        bslib::layout_column_wrap(
-            width = 1 / 3,
-            shiny::textInput(
-                inputId = ns("route_name"),
-                label = "Route ID",
-                value = "route"
-            ),
-            shinyWidgets::timeInput(
-                inputId = ns("route_start"),
-                label = "Start HH:MM",
-                value = "09:30"
-            ),
-            shinyWidgets::timeInput(
-                inputId = ns("route_end"),
-                label = "End HH:MM",
-                value = "18:30"
-            )
-        ),
-        shiny::actionButton(
-            inputId = ns("add"),
-            class = "btn btn-primary",
-            label = "Add"
-        ),
-        shiny::br(),
-        shiny::br(),
-        shiny::br(),
-        reactable::reactableOutput(ns("table"))
-    )
-}
-
-mod_drive_loading_route_server <- function(id, aux) {
-    shiny::moduleServer(id, function(input, output, session) {
-        ns <- session$ns
-
-        iv <- shinyvalidate::InputValidator$new()
-        iv$add_rule(
-            "route_name",
-            shinyvalidate::compose_rules(
-                shinyvalidate::sv_required()
-            )
-        )
-        iv$add_rule(
-            "route_start",
-            shinyvalidate::compose_rules(
-                shinyvalidate::sv_required()
-            )
-        )
-        iv$add_rule(
-            "route_end",
-            shinyvalidate::compose_rules(
-                shinyvalidate::sv_required()
-            )
-        )
-        iv$enable()
-
-        shiny::observe({
-            if (iv$is_valid()) {
-                shinyjs::enable("add")
-            } else {
-                shinyjs::disable("add")
-            }
-        })
-
-
-        shiny::observe({
-            data <- aux$drive_tech_manual_input_route
-
-            print(input$route_start)
-
-            new_data <- tibble::tibble(
-                route_id = nrow(data) + 1,
-                route_name = input$route_name,
-                route_start = input$route_start,
-                route_end = input$route_end
-            )
-
-            data <- dplyr::bind_rows(data, new_data)
-
-            aux$drive_tech_manual_input_route <- data
-
-            # shiny::updateTextInput(session, "route_id", value = "")
-        }) |>
-            shiny::bindEvent(input$add, ignoreInit = TRUE)
-
-
-        output$table <- reactable::renderReactable({
-            shiny::req(aux$drive_tech_manual_input_route)
-
-            shiny::validate(
-                shiny::need(
-                    nrow(aux$drive_tech_manual_input_route) > 0, "No data available"
-                )
-            )
-
-            aux$drive_tech_manual_input_route |>
-                reactable::reactable(theme = custom_dark_theme)
-        })
-    })
-}
-
-#!
-#!   PRICEE
-#!
 mod_drive_loading_price_ui <- function(id) {
     ns <- shiny::NS(id)
     col_12(
@@ -342,13 +311,13 @@ mod_drive_loading_price_server <- function(id, aux) {
 
         output$table <- reactable::renderReactable({
             shiny::req(aux$drive_tech_manual_input_price)
-            
-            tb <- aux$drive_tech_manual_input_price |> 
+
+            tb <- aux$drive_tech_manual_input_price |>
                 dplyr::mutate(
-                    price2=price
+                    price2 = price
                 )
-            
-            tb |> 
+
+            tb |>
                 reactable::reactable(
                     sortable = FALSE,
                     defaultPageSize = 24,
@@ -359,31 +328,31 @@ mod_drive_loading_price_server <- function(id, aux) {
                                 digits = 6
                             ),
                             cell = reactable.extras::text_extra(
-                               ns("price")
+                                ns("price")
                             )
                         ),
                         price2 = reactable::colDef(
                             name = "",
                             cell = reactablefmtr::data_bars(
-                                tb, 
-                                fill_color = c("#22577A","#38A3A5","#57CC99","#80ED99","#C7F9CC"),
+                                tb,
+                                fill_color = c("#22577A", "#38A3A5", "#57CC99", "#80ED99", "#C7F9CC"),
                                 fill_opacity = 0.8,
                                 text_position = "none"
                             )
                         )
                     )
-                ) 
+                )
         })
 
 
         price_d <- shiny::reactive({
             input$price
-        }) |> 
+        }) |>
             shiny::debounce(2000)
 
         shiny::observe({
             aux$drive_tech_manual_input_price[price_d()$row, "price"] <- as.numeric(price_d()$value)
-        }) |> 
+        }) |>
             shiny::bindEvent(price_d(), ignoreInit = TRUE)
     })
 }

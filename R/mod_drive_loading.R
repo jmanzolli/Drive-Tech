@@ -135,7 +135,6 @@ mod_drive_loading_server <- function(id, aux) {
     # !
     mod_drive_loading_bus_server("bus_table", aux)
     mod_drive_loading_charge_server("charger_table", aux)
-    mod_drive_loading_route_server("route_table", aux)
     mod_drive_loading_price_server("price_table", aux)
 
     shiny::observe({
@@ -149,11 +148,6 @@ mod_drive_loading_server <- function(id, aux) {
           "Chargers requires minimum one charger",
           type = "error"
         )
-      } else if (nrow(aux$drive_tech_manual_input_bus) != nrow(aux$drive_tech_manual_input_route)) {
-        shinyalert::shinyalert(
-          "There should be as many routes as buses.",
-          type = "error"
-        )
       } else {
         final_payload <- list(
           type = "manual",
@@ -162,7 +156,6 @@ mod_drive_loading_server <- function(id, aux) {
           start_energy = input$start_energy,
           drive_tech_manual_input_bus = aux$drive_tech_manual_input_bus,
           drive_tech_manual_input_charger = aux$drive_tech_manual_input_charger,
-          drive_tech_manual_input_route = aux$drive_tech_manual_input_route,
           drive_tech_manual_input_price = aux$drive_tech_manual_input_price
         )
 
@@ -221,12 +214,11 @@ mod_drive_loading_server <- function(id, aux) {
               currencySymbolPlacement = "s"
             )
           ),
+          mod_drive_loading_bus_ui(ns("bus_table")),
           bslib::layout_column_wrap(
             width = 1 / 2,
             heights_equal = "row",
-            mod_drive_loading_bus_ui(ns("bus_table")),
             mod_drive_loading_charge_ui(ns("charger_table")),
-            mod_drive_loading_route_ui(ns("route_table")),
             mod_drive_loading_price_ui(ns("price_table"))
           )
         ),

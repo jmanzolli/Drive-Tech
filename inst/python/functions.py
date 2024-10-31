@@ -51,17 +51,16 @@ def setManualData(
     avg_velocity=data["avg_velocity"]
     input_bus=data["drive_tech_manual_input_bus"]
     input_charger=data["drive_tech_manual_input_charger"]
-    input_route=data["drive_tech_manual_input_route"]
     input_price=data["drive_tech_manual_input_price"]
     
     # power = 100
     timestamp = 4
 
-    T_start = input_route["route_start"].tolist()
+    T_start = input_bus["route_start"].tolist()
     T_start = [x for x in T_start if str(x) != 'nan']
     T_start = [int(time_to_pct(x) * timestamp * 24) for x in T_start]
 
-    T_end = input_route["route_end"].tolist()
+    T_end = input_bus["route_end"].tolist()
     T_end = [x for x in T_end if str(x) != 'nan']
     T_end = [int(time_to_pct(x) * timestamp * 24) for x in T_end]
 
