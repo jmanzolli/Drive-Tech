@@ -69,7 +69,7 @@ app_ui <- function(request) {
               mod_drive_summary_ui("describe")
             ),
             bslib::nav_panel(
-              title = "Optimization",
+              title = "Optimizer",
               mod_drive_optimize_ui("optimize")
             )
           )

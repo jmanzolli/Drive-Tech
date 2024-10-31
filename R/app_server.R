@@ -39,7 +39,7 @@ app_server <- function(input, output, session) {
           text = "Upload the data first",
           type = "error"
         )
-    } else if (input$tab_drive_tech == "Optimization" & is.null(aux$drive_tech_data)) {
+    } else if (input$tab_drive_tech == "Optimizer" & is.null(aux$drive_tech_data)) {
       bslib::nav_select(
         id = "tab_drive_tech",
         selected = "Data Input",
@@ -50,7 +50,7 @@ app_server <- function(input, output, session) {
         text = "Upload the data first and then optimize",
         type = "error"
       )
-    } else if (input$tab_drive_tech == "Optimization") {
+    } else if (input$tab_drive_tech == "Optimizer") {
       if (aux$run_gurobi == 1) {
         session$userData$w$show()
 
@@ -95,7 +95,7 @@ app_server <- function(input, output, session) {
 
         shiny::showModal(
           shiny::modalDialog(
-            title = "Gurobi optimization",
+            title = "Gurobi optimizer",
             shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
             easyClose = TRUE,
             footer = NULL,
@@ -111,7 +111,7 @@ app_server <- function(input, output, session) {
       } else {
         shiny::showModal(
           shiny::modalDialog(
-            title = "Gurobi optimization",
+            title = "Gurobi optimizer",
             shiny::pre(style = "height: 75vh;", aux$drive_tech_data_op$log),
             easyClose = TRUE,
             footer = NULL,

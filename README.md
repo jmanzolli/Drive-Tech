@@ -20,5 +20,5 @@ WRITE THE PURPOSE
     - **Excel format**:  there are example data in `inst/data/drive_tech/v2/input.xslx`. For the xlsx format its important that the data follows the example standard as the example data. 
     - **Manual format**: its filling in the application and the example data its in `inst/data/drive_tech/v2/manual_input.json`
 - **Data Summary**: show the uploaded / inputed data.
-- **Optimization**: shows the results after the optimization and the option to export them.
+- **Optimizer**: shows the results after the optimizer and the option to export them.
 
