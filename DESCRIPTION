@@ -1,43 +1,48 @@
 Package: driveTech
 Title: Drive Tech
 Version: 1.0.0
-Authors@R: person('Cesar', 'Quintero', email = 'cesard1117@gmail.com', role = c('cre', 'aut'))
+Authors@R: 
+    person("Cesar", "Quintero", , "cesard1117@gmail.com", role = c("cre", "aut"))
 Description: App
 License: file LICENSE
 Imports: 
-    bsicons (>= 0.1.2),
-    bslib (>= 0.8.0),
+    bsicons,
+    bslib,
     config,
     dplyr,
-    echarts4r (>= 0.4.5),
-    formattable (>= 0.2.1),
+    echarts4r,
+    formattable,
     ggplot2,
-    golem (>= 0.5.1),
-    gt (>= 0.11.0),
-    leaflet (>= 2.2.2),
-    lubridate (>= 1.9.3),
-    openxlsx (>= 4.2.7.1),
-    plotly (>= 4.10.4),
+    golem,
+    gt,
+    jsonlite,
+    leaflet,
+    lubridate,
+    openxlsx,
+    plotly,
     purrr,
-    RColorBrewer (>= 1.1.3),
-    reactable (>= 0.4.4),
+    RColorBrewer,
+    reactable,
+    reactable.extras,
+    reactablefmtr,
     readr,
-    readxl (>= 1.4.3),
-    reticulate (>= 1.38.0),
-    scales (>= 1.3.0),
-    sf (>= 1.0.17),
-    shinipsum (>= 0.1.1),
-    shiny (>= 1.9.1),
-    shinyalert (>= 3.1.0),
-    shinycssloaders (>= 1.1.0),
-    shinydashboard (>= 0.7.2),
-    shinyjs (>= 2.1.0),
-    shinyWidgets (>= 0.8.7),
+    readxl,
+    reticulate,
+    scales,
+    sf,
+    shinipsum,
+    shiny,
+    shinyalert,
+    shinycssloaders,
+    shinydashboard,
+    shinyjs,
+    shinyvalidate,
+    shinyWidgets,
     stringr,
     tibble,
     tidyr,
     tools,
-    waiter (>= 0.2.5)
+    waiter
 Encoding: UTF-8
 LazyData: true
 RoxygenNote:  7.3.2
