@@ -64,10 +64,7 @@ def setManualData(
     T_end = [x for x in T_end if str(x) != 'nan']
     T_end = [int(time_to_pct(x) * timestamp * 24) for x in T_end]
 
-
     alpha = input_charger["charger_power"].tolist()
-    alpha = [x / timestamp for x in alpha if not pd.isna(x)]
-
     gama = (avg_velocity * energy_consumption) / timestamp
 
     Price = input_price["price"].tolist()
